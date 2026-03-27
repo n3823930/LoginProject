@@ -1,0 +1,2678 @@
+{
+  "$schema" : "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "Fortify SCA",
+        "version" : "26.1.0.0059",
+        "rules" : [ {
+          "id" : "B7ED276F-524D-444B-8930-7D77535BF0D0",
+          "shortDescription" : {
+            "text" : "J2EE Misconfiguration: Excessive Session Timeout"
+          },
+          "fullDescription" : {
+            "text" : "## J2EE Misconfiguration: Excessive Session Timeout\n\n工作階段逾時時間過長會讓攻擊者獲得較多的時間，就可能危及使用者帳戶。\n"
+          },
+          "help" : {
+            "text" : "開啟工作階段時間愈久，攻擊者威脅使用者帳戶的機率就愈大。工作階段仍為作用中時，攻擊者可能會暴力破解使用者密碼、破解使用者的無線加密金鑰，或是從開啟的瀏覽器控制工作階段。如果足夠大量的工作階段正在執行，較長的工作階段逾時時間也會導致無法釋放記憶體，最後造成阻斷服務。\n\n範例 1：如果工作階段逾時時間為零或小於零，該工作階段永遠不會過期。以下範例顯示工作階段逾時時間設定為 -1，就會無限期保留工作階段為作用中。\n    \n    \n    \n    ===== CODE START =====\n    &lt;session-config&gt;\n        &lt;session-timeout&gt;-1&lt;/session-timeout&gt;\n    &lt;/session-config&gt;\n===== CODE END =====\n\n\n\n\n`&lt;session-timeout&gt;` 標籤定義 Web 應用程式中，所有工作階段的預設逾時時間間隔。如果沒有 `&lt;session-timeout&gt;` 標籤，就會交由容器來設定預設逾時時間。\n\r\n此類別衍生自 Cigital Java Rulepack。\n\n## Recommendations\n\n將工作階段逾時時間設定為 30 分鐘或更少，可允許使用者與應用程式進行通訊，且有效防止攻擊。\n\n範例 2：以下範例將工作階段逾時時間設定為 20 分鐘。\n    \n    \n    \n    ===== CODE START =====\n    &lt;session-config&gt;\n      &lt;session-timeout&gt;20&lt;/session-timeout&gt;\n    &lt;/session-config&gt;\n===== CODE END =====\n\n\n\n\n\n## Tips\n\nNot available\n\n## References\n\n1. Java Servlet Specification 2.4, Sun Microsystems, Inc., http://java.sun.com/products/servlet/index.jsp\n2. Fortify Taxonomy | J2EE Misconfiguration: Excessive Session Timeout, OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=J2EE+Misconfiguration&subcategory=Excessive+Session+Timeout\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "EDD8E0B5-D8F2-4F56-A20B-549E3880318B",
+          "shortDescription" : {
+            "text" : "J2EE Bad Practices: getConnection()"
+          },
+          "fullDescription" : {
+            "text" : "## J2EE Bad Practices: getConnection()\n\nJ2EE 標準會禁止直接連線管理。\n"
+          },
+          "help" : {
+            "text" : "J2EE 標準會要求應用程式使用容器的資源管理工具來取得資源連線。 \n\n例如，一個 J2EE 應用程式應該以下列方式取得資料庫連線：\n\n    \n    \n    \n    ===== CODE START =====\n    ctx = new InitialContext();\n    datasource = (DataSource)ctx.lookup(DB_DATASRC_REF);\n    conn = datasource.getConnection();\n===== CODE END =====\n\n\n\n\n並且應避免使用下列方式取得連線：\n\n`conn = DriverManager.getConnection(CONNECT_STRING);`\n\n每一個主要的 Web 應用程式容器都會提供集區資料庫連線管理，並將其做為資源管理框架的一部分。在應用程式中複製這個功能是很困難的，且容易出錯，這也是 J2EE 標準禁止這種行為的原因之一。\n\n\n## Recommendations\n\n應使用 JNDI 尋找一個適當的連線因數 (connection factory) 來取代直接呼叫 `DriverManager.getConnection()`，並從連線因數中取得一個連線。\n\n## Tips\n\n根據使用中的資源管理架構的複雜性，在專屬的連線管理基礎架構中辨識特定錯誤可能是有困難的。因此，與其嘗試找出錯誤，倒不如將應用程式移轉到容器所提供的連線集區管理器。\n\n除了這些可能引起的普遍效能問題外，專屬連線管理通常會導致 Password Management 錯誤。在管理自身資料庫連線的應用程式中，發現密碼採用硬式編碼形式或儲存在純文字組態設定檔案中的情況十分常見，因為尚無替代方案可使用。對於用來移動至應用程式伺服器所管理連線集區的引數而言，此類型行為的範例應該還會替它帶來其他難題。\n\n如果您正在審核非 J2EE Java 的應用程式，那麼 J2EE Bad Practices 類別可能不適用於您的環境。在此案例中，您可以使用 Audit Guide 來克服這些問題。\n\n## References\n\n1. Java 2 Platform Enterprise Edition Specification, v1.4, Sun Microsystems, http://java.sun.com/j2ee/\n2. Fortify Taxonomy | J2EE Bad Practices: getConnection(), OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=J2EE+Bad+Practices&subcategory=getConnection%28%29\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "97B9518A-F1BC-44CE-BEB1-D5FBDDFCCF9D",
+          "shortDescription" : {
+            "text" : "System Information Leak: Incomplete Servlet Error Handling"
+          },
+          "fullDescription" : {
+            "text" : "## System Information Leak: Incomplete Servlet Error Handling\n\n如果 Servlet 沒有捕捉到所有異常，它可能會洩漏除錯資訊，而協助攻擊者訂定攻擊計畫。\n"
+          },
+          "help" : {
+            "text" : "當一個 Servlet 拋出一個異常時，Servlet 容器回傳給使用者的預設錯誤回應通常包含除錯資訊。這些資訊對於攻擊者來說是很有價值的。例如，堆疊追蹤可能顯示下列資訊給攻擊者：SQL 查詢語句、使用的程式庫類型、應用程式容器的版本。攻擊者可以從這些資訊中找到這些元件的弱點。\n\n範例 1：在以下的方法中，DNS 查找失敗會導致 Servlet 拋出一個異常。\n\n    \n    \n    \n    ===== CODE START =====\n    protected void doPost (HttpServletRequest req,\n                        HttpServletResponse res)\n                  throws IOException {\n        String ip = req.getRemoteAddr();\n        InetAddress addr = InetAddress.getByName(ip);\n        ...\n        out.println(\"hello \" + addr.getHostName());\n    }\n===== CODE END =====\n\n\n\n\n範例 2：如果 name 參數不是要求的一部分，那麼以下的方法會拋出一個 `NullPointerException`。\n\n    \n    \n    \n    ===== CODE START =====\n    protected void doPost (HttpServletRequest req,\n                        HttpServletResponse res)\n                  throws IOException {\n        String name = getParameter(\"name\");\n        ...\n        out.println(\"hello \" + name.trim());\n    }\n===== CODE END =====\n\n\n\n\n\n## Recommendations\n\n所有的 Servlet 高階方法都應該捕捉 `Throwable`，然後儘可能降低呼叫 Servlet 錯誤回應機制的可能性。 \n\n範例 3：`Example 1` 中的方法應該用以下方式重新編寫：\n\n    \n    \n    \n    ===== CODE START =====\n    protected void doPost (HttpServletRequest req,\n                        HttpServletResponse res) {\n          try {\n              String ip = req.getRemoteAddr();\n              InetAddress addr = InetAddress.getByName(ip);\n          ...\n              out.println(\"hello \" + addr.getHostName());\n          }catch (Throwable t) {\n              logger.error(\"caught throwable at top level\", t);\n          }\n      }\n    }\n===== CODE END =====\n\n\n\n\n\n## Tips\n\nNot available\n\n## References\n\n1. Security in Near Field Communication (NFC): Strengths and Weaknesses, Ernst Haselsteiner and Klemens Breitfuss, http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.475.3812&rep=rep1&type=pdf\n2. ERR01-J. Do not allow exceptions to expose sensitive information, CERT, https://www.securecoding.cert.org/confluence/display/java/ERR01-J.+Do+not+allow+exceptions+to+expose+sensitive+information\n3. CONFIDENTIAL-1: Purge sensitive information from exceptions, Oracle, http://www.oracle.com/technetwork/java/seccodeguide-139067.html#2\n4. Fortify Taxonomy | System Information Leak: Incomplete Servlet Error Handling, OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=System+Information+Leak&subcategory=Incomplete+Servlet+Error+Handling\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "4280F38B-9FDB-454E-B495-89CF45CD51B7",
+          "shortDescription" : {
+            "text" : "Missing Check against Null"
+          },
+          "fullDescription" : {
+            "text" : "## Missing Check against Null\n\n程式可能會解除參照 Null 指標，因為它不會檢查可能傳回 null 的函數回傳值。\n"
+          },
+          "help" : {
+            "text" : "幾乎每一個對軟體系統嚴重的攻擊都是從破解程式設計師的假設開始的。在攻擊後，程式設計師所建立的假設似乎是脆弱且拙劣的，但在攻擊之前，許多程式設計師會在午休結束之前為他們的假設進行辯護。\n\n通常會發現兩個顯而易見的問題假設，分別是「這個函數呼叫不可能會出錯」以及「就算函數呼叫失敗也沒關係」。因此當程式設計師忽略函數的回傳值時，這就暗示著他們已經做了上述的假設。\n\n\n\n範例 1：  以下程式碼在呼叫 `compareTo()` 成員函數前，不會檢查 `getParameter()` 傳回的字串是否為 `null`，可能會造成 `null` 解除參照。\n\n    \n    \n    \n    ===== CODE START =====\n    String itemName = request.getParameter(ITEM_NAME);\n        if (itemName.compareTo(IMPORTANT_ITEM)) {\n            ...\n        }\n        ...\n===== CODE END =====\n\n\n\n\n範例 2：以下程式碼顯示，設定為 `null` 的系統特性，之後被程式設計人員錯誤地假設為始終會被定義，因而被解除參照。\n\n    \n    \n    \n    ===== CODE START =====\n    System.clearProperty(\"os.name\");\n    ...\n    String os = System.getProperty(\"os.name\");\n    if (os.equalsIgnoreCase(\"Windows 95\") )\n        System.out.println(\"Not supported\");\n===== CODE END =====\n\n\n\n\n通常對此編碼錯誤的辯解為： \n\n「我知道要求的值會永遠存在，因為…如果這個值不存在，程式就無法執行想要的運作方式，所以無論是我處理這個錯誤或是只要讓程式停止解除參照 `null` 值都沒有關係。\n\n但是，攻擊者對於在程式中尋找意料之外的情況十分在行，特別是牽涉到異常的時候。\n\n\n## Recommendations\n\n如果一個函數可以回傳錯誤程式碼或其他任何能夠指明函數執行成功或失敗的證據，那麼請務必檢查錯誤情況，即便沒有明顯的跡象顯示會發生這個錯誤。除了避免安全性錯誤以外，許多乍看之下難以理解的錯誤，到最後都會歸究到使用包含 Unchecked Return Value 的錯誤方法進行呼叫。\n\n建立一個容易使用的標準方法來處理應用程式的失敗。如果錯誤處理程序是簡單直接的，則程式設計師較不會忽略它。一個標準化的錯誤處理方法是，把檢查和處理錯誤狀況的常用函數寫入封裝程式，而不需程式設計師額外費力。執行並應用封裝程式後，便可使用自訂的規則禁止和限制使用非封裝函數的使用。 \n\n範例 3：以下程式碼會對 `getParameter()` 執行包裝函式，檢查 `getParameter()` 的回傳值是否為 `null`，並在未定義必要的參數時使用預設值。\n\n    \n    \n    \n    ===== CODE START =====\n    String safeGetParameter (HttpRequest request, String name)\n    {\n        String value = request.getParameter(name);\n        if (value == null) {\n            return getDefaultValue(name)\n        }\n        return value;\n    }\n===== CODE END =====\n\n\n\n\n\n## Tips\n\n有些程式設計師在需要解釋這類問題時會說：「這是不可能會發生的，因為...」，對此我們必須加以提防。因為，程式設計師可以使用他們的工作站，以他們的觀點來開發系統運作的方式。如果軟體終究還是會在不同的作業系統、作業系統版本、硬體配置或執行階段環境下運作，那麼他們的觀點可能就不適用了。\n\n## References\n\n1. Fortify Taxonomy | Missing Check against Null, OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=Missing+Check+against+Null\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "FE4EADF2-7055-4C36-863E-5A01C4A0E1A4",
+          "shortDescription" : {
+            "text" : "System Information Leak"
+          },
+          "fullDescription" : {
+            "text" : "## System Information Leak\n\n顯示系統資料或除錯資訊有助於攻擊者瞭解系統並制訂攻擊計畫。\n"
+          },
+          "help" : {
+            "text" : "當系統資料或除錯資訊透過輸出串流或記錄功能離開程式時，會發生資訊洩漏。\n\n\n\n範例 1：以下程式碼會將異常寫入標準錯誤串流：\n\n    \n    \n    \n    ===== CODE START =====\n    try {\n        ...\n    } catch (Exception e) {\n        e.printStackTrace();\n    }\n===== CODE END =====\n\n\n\n\n視系統配置而定，此資訊可以傾印到主控台、寫入到記錄檔，或是顯示給遠端使用者。例如，使用指令碼機制時，將輸出資訊從「標準錯誤」或「標準輸出」重新導向至檔案或其他程式的過程是不太有意義的。此外，程式執行所在的系統可能會有遠端記錄機制，例如會將記錄傳送至遠端裝置的「syslog」伺服器。在開發期間，您沒有方法可得知從何處會結束顯示此資訊。\n\n在某些情況下，錯誤訊息會為攻擊者提供系統容易受到哪些確切的攻擊類型影響。例如，資料庫錯誤訊息即可揭露應用程式容易受到 SQL injection 攻擊。其他錯誤訊息還可揭露更多關於系統的間接線索。在 `Example 1` 中，洩漏的資訊可能會暗示有關作業系統類型、系統上安裝的應用程式，以及管理員在配置程式時所花費的努力等資訊。\n\n以下是行動環境中特有的另一種狀況。現在，多數行動裝置執行近距離無線通訊 (NFC) 通訊協定，以使用無線電通訊在裝置之間快速共用資訊。裝置距離極為接近或彼此接觸時，才會實現此通訊。即使將 NFC 的通訊範圍限制在幾公分距離，也可能發生竊聽、資料修改及其他多種類型的攻擊，因為 NFC 本身並不能確保安全通訊。\n\n範例 2：Android 平台提供對 NFC 的支援。以下程式碼建立進入範圍內其他裝置的訊息。\n    \n    \n    \n    ===== CODE START =====\n    ...\n    public static final String TAG = \"NfcActivity\";\n    private static final String DATA_SPLITTER = \"__:DATA:__\";\n    private static final String MIME_TYPE = \"application/my.applications.mimetype\";\n    ...\n    public NdefMessage createNdefMessage(NfcEvent event) {\n        TelephonyManager tm = (TelephonyManager)Context.getSystemService(Context.TELEPHONY_SERVICE);\n        String VERSION = tm.getDeviceSoftwareVersion();\n        String text = TAG + DATA_SPLITTER + VERSION;\n        NdefRecord record = new NdefRecord(NdefRecord.TNF_MIME_MEDIA,\n                MIME_TYPE.getBytes(), new byte[0], text.getBytes());\n        NdefRecord[] records = { record };\n        NdefMessage msg = new NdefMessage(records);\n        return msg;\n    }\n    ...\n===== CODE END =====\n\n\n\n\nNFC 資料交換格式 (NDEF) 訊息包含輸入的資料、URI 或自訂應用程式裝載。若訊息包含應用程式的相關資訊 (例如其名稱、MIME 類型或裝置軟體版本)，則可能會向竊聽者洩漏此資訊。在 `Example 2` 中，Fortify Static Code Analyzer 會在傳回陳述式中報告「系統資訊洩漏」弱點。\n\n\n## Recommendations\n\n編寫錯誤訊息時，請將安全性問題考慮進去。在生產環境中，請儘量使用簡短的錯誤訊息，而不要使用詳細的錯誤資訊。限制產生與儲存詳細的輸出內容，將有助於管理員和程式設計師診斷問題。除錯追蹤有時可能會出現在不明顯的地方 (例如，內嵌在錯誤頁面的 HTML 註解中)。\n\n即使是不會揭露堆疊追蹤或資料庫傾印的簡短錯誤訊息，都可能會助攻擊者一臂之力。例如，「拒絕存取」訊息可能表示系統中存在著檔案或使用者。\n\n若您擔心在 Android 裝置上透過 NFC 洩漏系統資料，可以執行以下三項作業之一。在進入範圍內其他裝置的訊息中不包括系統資料，加密訊息的裝載，或在更高層建立安全通訊通道。\n\n\n## Tips\n\n請不要依賴封裝程式的 Script、公司的 IT 政策或是思緒敏捷的系統管理員來預防系統資訊洩漏。編寫安全的軟體才是上策。\n\n這類弱點並不適用於所有類型的程式。例如，如果應用程式在用戶端機器上執行而攻擊者已經取得此用戶端的系統資訊，或者如果您只想將系統資訊列印到可信賴的記錄檔，那麼您可以使用《稽核指南》在掃描結果中篩選這個類別。\n\n## References\n\n1. Security in Near Field Communication (NFC): Strengths and Weaknesses, Ernst Haselsteiner and Klemens Breitfuss, http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.475.3812&rep=rep1&type=pdf\n2. ERR01-J. Do not allow exceptions to expose sensitive information, CERT, https://www.securecoding.cert.org/confluence/display/java/ERR01-J.+Do+not+allow+exceptions+to+expose+sensitive+information\n3. ENV02-J. Do not trust the values of environment variables, CERT, https://www.securecoding.cert.org/confluence/display/java/ENV02-J.+Do+not+trust+the+values+of+environment+variables\n4. FUNDAMENTALS-4: Establish trust boundaries, Oracle, http://www.oracle.com/technetwork/java/seccodeguide-139067.html#0\n5. CONFIDENTIAL-1: Purge sensitive information from exceptions, Oracle, http://www.oracle.com/technetwork/java/seccodeguide-139067.html#2\n6. Fortify Taxonomy | System Information Leak, OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=System+Information+Leak\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "E1B32227-C0BD-4A57-9C34-6794D9089A21",
+          "shortDescription" : {
+            "text" : "Unsafe Reflection"
+          },
+          "fullDescription" : {
+            "text" : "## Unsafe Reflection\n\n攻擊者可透過應用程式建立無法預期的控制流路徑，而這有可能會避開安全性檢查。\n"
+          },
+          "help" : {
+            "text" : "如果攻擊者可以提供值，且應用程式會使用這些值來決定要個體化的類別或要叫用的方法，那麼攻擊者就可能可以透過應用程式，建立非應用程式開發者指定的控制流路徑。這種攻擊途徑可能會讓攻擊者避開 Authentication 或 Access Control 檢查，或者使得應用程式以無法預期的方式運作。即使可以控制傳送給指定方法或建構函式的引數，老謀深算的攻擊者還是可能會取得成功發動攻擊的必要條件。\n\n如果攻擊者可能將檔案上傳到應用程式的類別路徑中的位置，或將新項目新增到應用程式的類別路徑，則將導致應用程式陷入完全的困境。無論是以上哪種情況，攻擊者可能使用反映作用，將新的、可能的惡意行為引入應用程式。\n\n範例 1：程式設計師使用反映 API 的常見原因是為了實作自己的指令發送器。以下範例顯示沒有使用反映功能的指令發送器：\n\n    \n    \n    \n    ===== CODE START =====\n    String ctl = request.getParameter(\"ctl\");\n    Worker ao = null;\n    if (ctl.equals(\"Add\")) {\n      ao = new AddCommand();\n    } else if (ctl.equals(\"Modify\")) {\n      ao = new ModifyCommand();\n    } else {\n      throw new UnknownActionError();\n    }\n    ao.doAction(request);\n===== CODE END =====\n\n\n\n\n程式設計師可能會將這段程式碼修改為以下內容，以使用反映功能：\n\n    \n    \n    \n    ===== CODE START =====\n    String ctl = request.getParameter(\"ctl\");\n        Class cmdClass = Class.forName(ctl + \"Command\");\n        Worker ao = (Worker) cmdClass.newInstance();\n        ao.doAction(request);\n===== CODE END =====\n\n\n\n\n乍看之下，修改程式碼似乎能提供許多好處。程式碼的行數較少，`if/else` 區塊已完全刪除，且現在可以在不修改指令發送器的情況下增加新的指令類型。\n\n但是，這樣的修改方式會讓攻擊者個體化所有會執行 `Worker` 介面的物件。如果指令發送器仍然負責 Access Control，那麼無論程式設計師何時建立執行 `Worker` 介面的新類別，他們都必須記得要去修改發送器的 Access Control 程式碼。如果他們無法修改 Access Control 程式碼，那麼部分 `Worker` 類別將不會擁有任何 Access Control 權限。\n\n處理存取控制問題的其中一個方法，就是讓 `Worker` 物件負責執行存取控制檢查。重新修改的程式碼的範例如下：\n\n    \n    \n    \n    ===== CODE START =====\n    String ctl = request.getParameter(\"ctl\");\n    Class cmdClass = Class.forName(ctl + \"Command\");\n    Worker ao = (Worker) cmdClass.newInstance();\n    ao.checkAccessControl(request);\n    ao.doAction(request);\n===== CODE END =====\n\n\n\n\n雖然有所改善，但是它鼓勵使用分散式方法來進行 Access Control，這會使程式設計師更容易犯下 Access Control 的錯誤。\n\n這段程式碼同時也突顯出另一個關於使用反映功能建立指令發送器的安全問題。攻擊者可能為任意物件類型叫用預設建構函式。實際上，攻擊者甚至不會受限於實作 `Worker` 介面的物件；攻擊者可以叫用系統中任何物件的預設建構函式。如果物件不實作 `Worker` 介面，將會在指派到 `ao` 之前拋出 `ClassCastException`。但是如果建構函式執行了有利於攻擊者的作業，則傷害可能已經造成。雖然這種情況在簡易的應用程式中的影響相對不大，但是對於日趨複雜的較大型應用程式而言，做出攻擊者可以找到一個建構函式來作為攻擊一部分的假設也十分合理。\n\n如果使用即時呼叫者的類別載入器檢查執行工作的特定 Java API，是針對反映呼叫返回的不可信賴物件而叫用，存取檢查可能會在程式碼執行鏈中進一步受到危害。這些 Java API 會略過 SecurityManager 檢查，確保執行鏈中的所有呼叫者都具備必要的安全權限。請注意，應確保不針對反映呼叫返回的不可信賴物件叫用這些 API，因為他們會略過安全存取檢查，從而使系統易於受遠端攻擊者的攻擊。如需有關這些 Java API 的詳細資訊，請參閱適用於 Java 程式語言的安全編碼規範之第 9 條。\n\n\n\n## Recommendations\n\n避免 Unsafe Reflection 的最佳方法就是採用一些間接手段：建立允許使用者指定的合法名稱清單，並且只允許使用者從清單中進行選擇。使用這個方法，使用者提供的輸入永遠不會直接用來指定一個傳送到反映 API 的名稱。\n\n反映功能也可以用來建立自訂的資料驅動基礎架構，這樣組態設定檔案就可以決定應用程式使用的物件類型和組合。這種類型的程式編寫方式會帶來以下安全性問題：\n\n- 控制程式的組態設定檔案是程式來源程式碼的必要部分，因此必須受到保護與檢閱。\n\n- 因為組態設定檔案對應用程式而言是獨一無二的，所以我們必須執行獨特的操作來評估設計的安全性。\n\n- 因為現在應用程式的語意受制於擁有自訂格式的組態設定檔案，所以若要得到最理想的靜態測試結果，就需要使用自訂規則。\n\n基於這些原因，除非您的團隊能夠投入大量的精力在安全評估上，否則請避免使用這種設計形式。\n\n\n## Tips\n\n在以使用者輸入做為呼叫反映方法的一部分之前，要特別注意驗證使用者輸入的各種企圖。因為應用程式很有可能會比作業系統、File System 或其他系統元件發展得更快，所以使用者輸入的驗證工作必須要比傳送使用者資料到其他系統元件所要求的輸入驗證進行得更快。即使驗證目前是正確的，也不能保證它在將來依舊正確。\n\n有許多現代的 Web 架構提供執行使用者輸入驗證的機制 (包括 Struts 和 Spring MVC)。為了突顯未驗證的輸入來源，Fortify 安全編碼檢查規則會降低 Fortify Static Code Analyzer 所報告之問題的攻擊可能性，並在使用框架驗證機制時提供支援證據的指標，以動態重新排列其優先順序。我們將此功能稱為「內容相關性排名」。為了進一步協助 Fortify 使用者進行稽核程序，Fortify Software 安全研發團隊提供了資料驗證專案範本，該範本會依據套用到其輸入來源的驗證機制，按資料夾對問題進行分組。\n\n## References\n\n1. Secure Coding Guidelines for the Java Programming Language, Version 4.0, http://www.oracle.com/technetwork/java/seccodeguide-139067.html\n2. INPUT-1: Validate inputs, Oracle, http://www.oracle.com/technetwork/java/seccodeguide-139067.html#5\n3. Fortify Taxonomy | Unsafe Reflection, OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=Unsafe+Reflection\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "E04D3E1F-2D8C-400A-BB55-7DA143F987E3",
+          "shortDescription" : {
+            "text" : "SQL Injection"
+          },
+          "fullDescription" : {
+            "text" : "## SQL Injection\n\n透過不可信賴來源的輸入來建構的動態 SQL 陳述式可讓攻擊者修改陳述式的意義或是執行任意的 SQL 指令。\n"
+          },
+          "help" : {
+            "text" : "SQL Injection 錯誤會在以下情況中出現：\n\n1.資料從一個不可信賴的來源進入程式。\n\n\n\n2.資料用來動態建構 SQL 查詢。\n\n\n\n範例 1：以下程式碼動態地建構並執行了一個 SQL 查詢，該查詢可用來搜尋符合指定名稱的項目。查詢僅會顯示項目所有者與目前已驗證使用者名稱相符的項目。\n\n    \n    \n    \n    ===== CODE START =====\n    ...\n        String userName = ctx.getAuthenticatedUserName();\n        String itemName = request.getParameter(\"itemName\");\n        String query = \"SELECT * FROM items WHERE owner = '\"\n                    + userName + \"' AND itemname = '\"\n                    + itemName + \"'\";\n        ResultSet rs = stmt.execute(query);\n    ...\n===== CODE END =====\n\n\n\n\n此查詢欲執行以下程式碼：\n\n    \n    \n    \n    ===== CODE START =====\n    SELECT * FROM items\n        WHERE owner = &lt;userName&gt;\n        AND itemname = &lt;itemName&gt;;\n===== CODE END =====\n\n\n\n\n但是，由於這個查詢是連續固定基礎查詢字串和使用者輸入字串所動態建構而成的，所以只有在 `itemName` 沒有包含單引號字元的時候，查詢才會正確執行。如果使用者名稱為 `wiley` 的攻擊者在 `itemName` 中輸入字串「`name' OR 'a'='a`」，那麼查詢將變成以下內容：\n\n    \n    \n    \n    ===== CODE START =====\n    SELECT * FROM items\n        WHERE owner = 'wiley'\n        AND itemname = 'name' OR 'a'='a';\n===== CODE END =====\n\n\n\n\n附加條件 `OR 'a'='a'` 會使 where 子句的評估永遠為 True，所以此查詢在邏輯上可等同於以下較簡化的查詢：\n\n`SELECT * FROM items;`\n\n由於查詢必須只會傳回驗證使用者所擁有的項目，但簡化查詢會讓攻擊者不再受到此要求所限制；因此，查詢現在將會傳回所有儲存在 `items` 表中的項目，而不考慮指定的擁有者為何。\n\n範例 2：此範例會檢查不同的惡意值傳送到建立的查詢以及在 `Example 1` 中執行的效果。如果使用者名稱為 `wiley` 的攻擊者在 `itemName` 中輸入字串「`name'; DELETE FROM items; --`」，那麼查詢將變成以下兩個查詢：\n\n    \n    \n    \n    ===== CODE START =====\n    SELECT * FROM items\n        WHERE owner = 'wiley'\n        AND itemname = 'name';\n    \n        DELETE FROM items;\n    \n        --'\n===== CODE END =====\n\n\n\n\n許多的資料庫伺服器 (包括 Microsoft(R) SQL Server 2000)，允許一次執行多個由分號隔開的 SQL 陳述式。此攻擊字串會在 Oracle 和其他不允許整批執行由分號隔開指令的資料庫伺服器上造成錯誤，而在允許整批執行的資料庫上，此類的攻擊可讓攻擊者對資料庫執行任意的指令。\n\n請注意這對連字符號 (--)，這在大部分的資料庫伺服器上都表示剩餘的陳述式，並視為註釋不予執行 [4]。在此案例中，註釋字元會從修改的查詢中將剩餘的一個單引號移除。在不允許以此方式使用註釋的資料庫中，攻擊者通常會使用類似 `Example 1` 中的方法。如果攻擊者輸入「`name'); DELETE FROM items; SELECT * FROM items WHERE 'a'='a`」字串，將會建立以下三個有效的陳述式：\n\n    \n    \n    \n    ===== CODE START =====\n    SELECT * FROM items\n        WHERE owner = 'wiley'\n        AND itemname = 'name';\n    \n        DELETE FROM items;\n    \n        SELECT * FROM items WHERE 'a'='a';\n===== CODE END =====\n\n\n\n\n有人認為在行動環境中，典型的 Web 應用程式弱點 (例如 SQL Injection) 不會產生影響，因為使用者為何會攻擊自己呢？但是請謹記，行動平台的本質是從多種來源下載，並在相同裝置上一起執行的應用程式。在金融應用程式旁執行惡意程式碼的可能性很高，這必然會擴大行動應用程式的受攻擊面，將程序之間的通訊包括在內。\n\n範例 3：以下程式碼改寫 `Example 1` 以適用於 Android 平台。\n\n    \n    \n    \n    ===== CODE START =====\n    ...\n            PasswordAuthentication pa = authenticator.getPasswordAuthentication();\n            String userName = pa.getUserName();\n            String itemName = this.getIntent().getExtras().getString(\"itemName\");\n            String query = \"SELECT * FROM items WHERE owner = '\"\n                                    + userName + \"' AND itemname = '\"\n                                    + itemName + \"'\";\n            SQLiteDatabase db = this.openOrCreateDatabase(\"DB\", MODE_PRIVATE, null);\n            Cursor c = db.rawQuery(query, null);\n    ...\n===== CODE END =====\n\n\n\n\n避免 SQL injection 攻擊的一個傳統方法為，將其視為輸入驗證的問題，只接受安全值允許清單中的字元，或是驗證並避免來自潛在惡意值的清單 (拒絕清單)。檢查允許清單是一種相當有效的方法，可強制執行嚴格的輸入驗證規則，而參數化 SQL 陳述式所需的維護較少，並且能提供更高的安全性保障。通常，實作拒絕清單總是存在一些漏洞，所以無法有效避免 SQL injection 攻擊。例如，攻擊者可能：\n\n    - 將未列入黑名單的值當作目標\n    - 尋找方法以略過特定逸出中繼字元 (escape meta-character) 的需要\n    - 使用儲存的程序去隱藏插入的中繼字元\n\n手動去除在 SQL 查詢中特殊字元的輸入有一定的幫助，但無法完全保護您的應用程式免於 SQL injection 攻擊。\n\n另外一個處理 SQL injection 攻擊的普遍建議方法為使用儲存的程序。雖然儲存的程序可避免某些類型的 SQL injection 攻擊，但是對於大多數的攻擊還是無能為力。儲存的程序一般用來避免 SQL injection 攻擊的方式是，限制可以傳送到參數的指令類型。但是，雖然有許多的限制方法，仍有許多危險的指令可以傳入儲存的程序中。所以再次強調，儲存過程在某些情況下可以避免這種攻擊，但是並不能完全保護您的應用系統抵禦 SQL injection 的攻擊。\n\n\n## Recommendations\n\n造成 SQL Injection 漏洞的根源是攻擊者可以變更 SQL 查詢的環境，將程式設計師要解譯的資料的值當作是指令來篡改。建構 SQL 查詢時，程式設計師知道哪些部分應該被解譯為指令，而哪些應該被解譯為資料。參數化 SQL 陳述式可藉由禁止直接變更資料環境來限制此運作方式，可幾乎防止所有的 SQL injection 攻擊。參數化 SQL 陳述式是由一般的 SQL 字串來建立，但如果要增加使用者輸入的資料，將會加入連結參數，用來存放隨後要插入的資料。換句話說，連結參數可讓程式設計師明確的指定資料庫，何者應該視為指令而何者應該視為資料處理。當程式可以執行指令時，程式會在資料庫上指定每個連結參數的值所使用的執行階段值，免於將資料解讀為修改的指令的風險。\n\n範例 1 可以重新編寫成使用參數化 SQL 陳述式 (而非使用者連續輸入的字串)，如下所示：\n\n    \n    \n    \n    ===== CODE START =====\n    ...\n        String userName = ctx.getAuthenticatedUserName();\n        String itemName = request.getParameter(\"itemName\");\n        String query = \"SELECT * FROM items WHERE itemname=? AND owner=?\";\n        PreparedStatement stmt = conn.prepareStatement(query);\n        stmt.setString(1, itemName);\n        stmt.setString(2, userName);\n        ResultSet results = stmt.execute();\n    ...\n===== CODE END =====\n\n\n\n\nAndroid 相應程式碼如下：\n\n    \n    \n    \n    ===== CODE START =====\n    ...\n        PasswordAuthentication pa = authenticator.getPasswordAuthentication();\n        String userName = pa.getUserName();\n        String itemName = this.getIntent().getExtras().getString(\"itemName\");\n        String query = \"SELECT * FROM items WHERE itemname=? AND owner=?\";\n        SQLiteDatabase db = this.openOrCreateDatabase(\"DB\", MODE_PRIVATE, null);\n        Cursor c = db.rawQuery(query, new Object[]{itemName, userName});\n    ...\n===== CODE END =====\n\n\n\n\n常會在產生報告的程式碼中發現更多複雜的情況，要求使用者輸入會影響 SQL 陳述式的結構，比如在 `WHERE` 子句中加入動態的約束條件。不要使用此要求，證明連續使用者輸入以建立一個查詢字串。若必須根據使用者輸入來影響指令結構，可使用間接方法來避免 SQL injection 攻擊：建立一組合法字串，使其對應到您可能要加入到 SQL 陳述式中的不同元素。在建構指令時，讓使用者從該組字串來選擇輸入值，因為該組字串在應用程式的控制中。\n\n\n## Tips\n\n常見的錯誤為，使用參數化 SQL 陳述式，而該指令由使用者所控制的字串所建立。這顯然違背了使用參數化 SQL 陳述式的目的。如果您不能確定用來產生指令的字串是固定由應用程式所控制，請勿因為這些字串不會直接被當作 SQL 字串來執行而假設它們是安全的。務必徹底檢查 SQL 陳述式中使用的所有由使用者控制的字串，確保他們不會修改查詢的含意。\n\n有許多現代的 Web 架構提供執行使用者輸入驗證的機制 (包括 Struts 和 Spring MVC)。為了突顯未驗證的輸入來源，Fortify 安全編碼檢查規則會降低 Fortify Static Code Analyzer 所報告之問題的攻擊可能性，並在使用框架驗證機制時提供支援證據的指標，以動態重新排列其優先順序。我們將此功能稱為「內容相關性排名」。為了進一步協助 Fortify 使用者進行稽核程序，Fortify Software 安全研發團隊提供了資料驗證專案範本，該範本會依據套用到其輸入來源的驗證機制，按資料夾對問題進行分組。\n\n即使經過努力補救資料流程，仍可能會報告 SQL Injection 問題 (優先順序值會降低)。當 Fortify Static Code Analyzer 發現使用者控制的輸入有清楚的資料流程跡象，將用於建構 SQL 陳述式時，便會報告高/嚴重優先順序的資料流程問題。當 Fortify Static Code Analyzer 無法判斷資料的來源，但資料來源可以動態變更時，將會報告低/中優先順序的語義問題。在 SQL Injection 等部分特定弱點類別中，攻擊弱點的潛在影響會大於稽核誤報問題造成的不便，所以會採用此策略。\n\n## References\n\n1. SQL Injection Attacks by Example, S. J. Friedl, http://www.unixwiz.net/techtips/sql-injection.html\n2. Stop SQL Injection Attacks Before They Stop You, MSDN Magazine, P. Litwin\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "CBDB6290-DF73-42E1-8D9E-3B5C4B629761",
+          "shortDescription" : {
+            "text" : "Trust Boundary Violation"
+          },
+          "fullDescription" : {
+            "text" : "## Trust Boundary Violation\n\n將可信賴和不可信賴的資料混合在同一資料結構中，這麼做會讓程式設計師誤信未經驗證的資料。\n"
+          },
+          "help" : {
+            "text" : "您可以將信賴界線想像成一條透過程式所畫出的分界線。在分界線的一側，資料是不可信賴的。而在線的另一側，則會假設資料是可信賴的。驗證邏輯的目的是允許資料安全地跨越可信賴界線－－從不可信賴的一側移動到可信賴的一側。\n\n當一個程式把可信賴和不可信賴間的界線弄得模糊不清時，就會發生 Trust Boundary Violation 的問題。發生這種錯誤最普遍的方式就是，將可信賴的和不可信賴的資料混合在同一個資料結構中。\n\n\n\n範例 1：以下 Java 程式碼接受 HTTP 要求，並在檢查以確認使用者已通過驗證之前，在 HTTP 工作階段物件中儲存 `usrname` 參數。\n\n    \n    \n    \n    ===== CODE START =====\n    usrname = request.getParameter(\"usrname\");\n    if (session.getAttribute(ATTR_USR) != null) {\n        session.setAttribute(ATTR_USR, usrname);\n    }\n===== CODE END =====\n\n\n\n\n如果沒有建立完善且妥善維護的信賴界線，程式設計師將不可避免地混淆哪些資料經過驗證以及那些資料尚未經過驗證。這種混淆狀況最後會導致在沒有先行驗證某些資料的情況下，就使用這些資料。\n\n\n## Recommendations\n\n在應用程式中定義清楚的信賴界線。請勿使用相同的資料結構來保存在某些環境下受到信賴，但在其他環境下又變成不可信賴的資料。應該儘量減少資料跨越信賴界線的方式。\n\n處理輸入前需要透過許多使用者互動來建立輸入時，有時就會發生 Trust Boundary Violation 的問題。所以，在取得所有資料前，不可能進行完整的輸入驗證。在這種情況下，維護一個信賴界線仍然是非常重要的。您應該在個別的不可信賴資料結構中建立不可信賴的資料，並在經過驗證後移動到一個可信賴的位置中。\n\n\n## Tips\n\n您不需要尋找「確鑿的證據」，來假設沒有經過驗證的資料是可信賴的。如果沒有清楚地描繪出信賴界線並嚴格遵守此界限，那麼發生驗證錯誤是無法避免的。所以，與其花費時間尋找一個可利用的方法，還不如著重於教育程式設計者如何創造一個好的信賴界線。\n\n大部分的程式都有一個由應用程式語義定義的信賴界線。您可以考慮編寫自訂規則，檢查其他存在跨越信賴界線的使用者輸入的所在位置。\n\n有許多現代的 Web 架構提供執行使用者輸入驗證的機制 (包括 Struts 和 Spring MVC)。為了突顯未驗證的輸入來源，Fortify 安全編碼檢查規則會降低 Fortify Static Code Analyzer 所報告之問題的攻擊可能性，並在使用框架驗證機制時提供支援證據的指標，以動態重新排列其優先順序。我們將此功能稱為「內容相關性排名」。為了進一步協助 Fortify 使用者進行稽核程序，Fortify Software 安全研發團隊提供了資料驗證專案範本，該範本會依據套用到其輸入來源的驗證機制，按資料夾對問題進行分組。\n\n## References\n\n1. Writing Secure Code, Second Edition, Microsoft Press, M. Howard, D. LeBlanc\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "749BCC9F-FE61-4DC0-9EF2-5EF1872C7717",
+          "shortDescription" : {
+            "text" : "J2EE Misconfiguration: Missing Error Handling"
+          },
+          "fullDescription" : {
+            "text" : "## J2EE Misconfiguration: Missing Error Handling\n\nWeb 應用程式必須定義預設的錯誤頁面，以避免攻擊者從應用程式容器的內建錯誤回應中挖掘資訊。\n"
+          },
+          "help" : {
+            "text" : "當攻擊者瀏覽網站尋找弱點時，網站所提供的資訊數量是任何攻擊的成敗關鍵。如果應用程式向攻擊者顯示堆疊追蹤的資訊，其所釋出的資訊使攻擊者的攻擊變得輕而易舉。例如，堆疊追蹤可能顯示下列資訊給攻擊者：SQL 查詢語句、使用的程式庫類型、應用程式容器的版本。攻擊者可以從這些資訊中找到這些元件的弱點。\n\n因此，應用程式組態應指定預設錯誤頁面以確保應用程式不會向攻擊者洩漏錯誤訊息。處理標準 HTTP 錯誤程式碼是簡單、有用、安全的作法，完善的組態還會定義用於補救的錯誤處理器，來捕捉應用程式可能會拋出的所有異常。\n\n\n## Recommendations\n\nWeb 應用程式必須設定預設的錯誤頁面。您的 `web.xml` 至少應該包含以下項目：\n\n    \n    \n    \n    ===== CODE START =====\n    &lt;error-page&gt;\n       &lt;exception-type&gt;java.lang.Throwable&lt;/exception-type&gt;\n    &lt;location&gt;/error.jsp&lt;/location&gt;\n    &lt;/error-page&gt;\n    &lt;error-page&gt;\n       &lt;error-code&gt;404&lt;/error-code&gt;\n    &lt;location&gt;/error.jsp&lt;/location&gt;\n    &lt;/error-page&gt;\n    &lt;error-page&gt;\n       &lt;error-code&gt;500&lt;/error-code&gt;\n    &lt;location&gt;/error.jsp&lt;/location&gt;\n    &lt;/error-page&gt;\n===== CODE END =====\n\n\n\n\n\n## Tips\n\nNot available\n\n## References\n\n1. Exploiting Software, Addison-Wesley, G. Hoglund, G. McGraw\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "4B673A45-9AD5-4CBA-945B-11A3702CDF57",
+          "shortDescription" : {
+            "text" : "SQL Injection"
+          },
+          "fullDescription" : {
+            "text" : "## SQL Injection\n\n透過不可信賴來源的輸入來建構的動態 SQL 陳述式可讓攻擊者修改陳述式的意義或是執行任意的 SQL 指令。\n"
+          },
+          "help" : {
+            "text" : "SQL Injection 錯誤會在以下情況中出現：\n\n1. 資料從一個不可信賴的來源進入程式。\n\n在此案例中，Fortify Static Code Analyzer 無法判斷資料來源是否可信賴。\n\n2. 資料用來動態建構 SQL 查詢。\n\n\n\n範例 1：以下程式碼動態地建構並執行了一個 SQL 查詢，該查詢可用來搜尋符合指定名稱的項目。查詢僅會顯示項目所有者與目前已驗證使用者名稱相符的項目。\n\n    \n    \n    \n    ===== CODE START =====\n    ...\n        String userName = ctx.getAuthenticatedUserName();\n        String itemName = request.getParameter(\"itemName\");\n        String query = \"SELECT * FROM items WHERE owner = '\"\n                    + userName + \"' AND itemname = '\"\n                    + itemName + \"'\";\n        ResultSet rs = stmt.execute(query);\n    ...\n===== CODE END =====\n\n\n\n\n此查詢欲執行以下程式碼：\n\n    \n    \n    \n    ===== CODE START =====\n    SELECT * FROM items\n        WHERE owner = &lt;userName&gt;\n        AND itemname = &lt;itemName&gt;;\n===== CODE END =====\n\n\n\n\n但是，由於這個查詢是連續固定基礎查詢字串和使用者輸入字串所動態建構而成的，所以只有在 `itemName` 沒有包含單引號字元的時候，查詢才會正確執行。如果使用者名稱為 `wiley` 的攻擊者在 `itemName` 中輸入字串「`name' OR 'a'='a`」，那麼查詢將變成以下內容：\n\n    \n    \n    \n    ===== CODE START =====\n    SELECT * FROM items\n        WHERE owner = 'wiley'\n        AND itemname = 'name' OR 'a'='a';\n===== CODE END =====\n\n\n\n\n附加條件 `OR 'a'='a'` 會使 where 子句的評估永遠為 True，所以此查詢在邏輯上可等同於以下較簡化的查詢：\n\n`SELECT * FROM items;`\n\n由於查詢必須只會傳回驗證使用者所擁有的項目，但簡化查詢會讓攻擊者不再受到此要求所限制；因此，查詢現在將會傳回所有儲存在 `items` 表中的項目，而不考慮指定的擁有者為何。\n\n範例 2：此範例會檢查不同的惡意值傳送到建立的查詢以及在 `Example 1` 中執行的效果。如果使用者名稱為 `wiley` 的攻擊者在 `itemName` 中輸入字串「`name'; DELETE FROM items; --`」，那麼查詢將變成以下兩個查詢：\n\n    \n    \n    \n    ===== CODE START =====\n    SELECT * FROM items\n        WHERE owner = 'wiley'\n        AND itemname = 'name';\n    \n        DELETE FROM items;\n    \n        --'\n===== CODE END =====\n\n\n\n\n許多的資料庫伺服器 (包括 Microsoft(R) SQL Server 2000)，允許一次執行多個由分號隔開的 SQL 陳述式。此攻擊字串會在 Oracle 和其他不允許整批執行由分號隔開指令的資料庫伺服器上造成錯誤，而在允許整批執行的資料庫上，此類的攻擊可讓攻擊者對資料庫執行任意的指令。\n\n請注意這對連字符號 (--)，這在大部分的資料庫伺服器上都表示剩餘的陳述式，並視為註釋不予執行 [4]。在此案例中，註釋字元會從修改的查詢中將剩餘的一個單引號移除。在不允許以此方式使用註釋的資料庫中，攻擊者通常會使用類似 `Example 1` 中的方法。如果攻擊者輸入「`name'); DELETE FROM items; SELECT * FROM items WHERE 'a'='a`」字串，將會建立以下三個有效的陳述式：\n\n    \n    \n    \n    ===== CODE START =====\n    SELECT * FROM items\n        WHERE owner = 'wiley'\n        AND itemname = 'name';\n    \n        DELETE FROM items;\n    \n        SELECT * FROM items WHERE 'a'='a';\n===== CODE END =====\n\n\n\n\n有人認為在行動環境中，典型的 Web 應用程式弱點 (例如 SQL Injection) 不會產生影響，因為使用者為何會攻擊自己呢？但是請謹記，行動平台的本質是從多種來源下載，並在相同裝置上一起執行的應用程式。在金融應用程式旁執行惡意程式碼的可能性很高，這必然會擴大行動應用程式的受攻擊面，將程序之間的通訊包括在內。\n\n範例 3：以下程式碼改寫 `Example 1` 以適用於 Android 平台。\n\n    \n    \n    \n    ===== CODE START =====\n    ...\n            PasswordAuthentication pa = authenticator.getPasswordAuthentication();\n            String userName = pa.getUserName();\n            String itemName = this.getIntent().getExtras().getString(\"itemName\");\n            String query = \"SELECT * FROM items WHERE owner = '\"\n                                    + userName + \"' AND itemname = '\"\n                                    + itemName + \"'\";\n            SQLiteDatabase db = this.openOrCreateDatabase(\"DB\", MODE_PRIVATE, null);\n            Cursor c = db.rawQuery(query, null);\n    ...\n===== CODE END =====\n\n\n\n\n避免 SQL injection 攻擊的一個傳統方法為，將其視為輸入驗證的問題，只接受安全值允許清單中的字元，或是驗證並避免來自潛在惡意值的清單 (拒絕清單)。檢查允許清單是一種相當有效的方法，可強制執行嚴格的輸入驗證規則，而參數化 SQL 陳述式所需的維護較少，並且能提供更高的安全性保障。通常，實作拒絕清單總是存在一些漏洞，所以無法有效避免 SQL injection 攻擊。例如，攻擊者可能：\n\n    - 將未列入黑名單的值當作目標\n    - 尋找方法以略過特定逸出中繼字元 (escape meta-character) 的需要\n    - 使用儲存的程序去隱藏插入的中繼字元\n\n手動去除在 SQL 查詢中特殊字元的輸入有一定的幫助，但無法完全保護您的應用程式免於 SQL injection 攻擊。\n\n另外一個處理 SQL injection 攻擊的普遍建議方法為使用儲存的程序。雖然儲存的程序可避免某些類型的 SQL injection 攻擊，但是對於大多數的攻擊還是無能為力。儲存的程序一般用來避免 SQL injection 攻擊的方式是，限制可以傳送到參數的指令類型。但是，雖然有許多的限制方法，仍有許多危險的指令可以傳入儲存的程序中。所以再次強調，儲存過程在某些情況下可以避免這種攻擊，但是並不能完全保護您的應用系統抵禦 SQL injection 的攻擊。\n\n\n## Recommendations\n\n造成 SQL Injection 漏洞的根源是攻擊者可以變更 SQL 查詢的環境，將程式設計師要解譯的資料的值當作是指令來篡改。建構 SQL 查詢時，程式設計師知道哪些部分應該被解譯為指令，而哪些應該被解譯為資料。參數化 SQL 陳述式可藉由禁止直接變更資料環境來限制此運作方式，可幾乎防止所有的 SQL injection 攻擊。參數化 SQL 陳述式是由一般的 SQL 字串來建立，但如果要增加使用者輸入的資料，將會建立連結參數，用來存放隨後要插入的資料。連結參數可讓程式設計師明確的指定資料庫，何者應該視為指令而何者應該視為資料處理。當程式可以執行指令時，程式會在資料庫上指定每個連結參數的值所使用的執行階段值，免於將資料解讀為指令的風險。 \n\n範例 1 可以重新編寫成使用參數化 SQL 陳述式 (而非使用者連續輸入的字串)，如下所示：\n\n    \n    \n    \n    ===== CODE START =====\n    ...\n        String userName = ctx.getAuthenticatedUserName();\n        String itemName = request.getParameter(\"itemName\");\n        String query =\n                \"SELECT * FROM items WHERE itemname=? AND owner=?\";\n        PreparedStatement stmt = conn.prepareStatement(query);\n        stmt.setString(1, itemName);\n        stmt.setString(2, userName);\n        ResultSet results = stmt.execute();\n    ...\n===== CODE END =====\n\n\n\n\nAndroid 相應程式碼如下：\n\n    \n    \n    \n    ===== CODE START =====\n    ...\n        PasswordAuthentication pa = authenticator.getPasswordAuthentication();\n        String userName = pa.getUserName();\n        String itemName = this.getIntent().getExtras().getString(\"itemName\");\n        String query = \"SELECT * FROM items WHERE itemname=? AND owner=?\";\n        SQLiteDatabase db = this.openOrCreateDatabase(\"DB\", MODE_PRIVATE, null);\n        Cursor c = db.rawQuery(query, new Object[]{itemName, userName});\n    ...\n===== CODE END =====\n\n\n\n\n常會在產生報告的程式碼中發現更多複雜的情況，要求使用者輸入會影響 SQL 陳述式的結構，例如在 `WHERE` 子句中加入動態的約束條件。請勿因為此需求就讓查詢字串無條件接受使用者的連續輸入。若必須根據使用者輸入來影響陳述式指令結構，可使用間接方法來避免 SQL injection 攻擊：建立一組合法字串，使其對應到您可能要加入到 SQL 陳述式中的不同元素。在建構指令時，讓使用者從該組字串來選擇輸入值，因為該組字串在應用程式的控制中。\n\n\n## Tips\n\n常見的錯誤為，使用參數化 SQL 陳述式，而該指令由使用者所控制的字串所建立。這顯然違背了使用參數化 SQL 陳述式的目的。如果您不能確定用來產生參數化指令的字串是固定由應用程式所控制，請勿因為這些字串不會直接被當作 SQL 字串來執行而假設它們是安全的。務必徹底檢查 SQL 陳述式中使用的所有由使用者控制的字串，確保他們不會修改查詢的含意。\n\n如果資料來自類別的公用非 final 字串欄位，則代表此資料不可靠。未知的來源可能會修改此類型的欄位。\n\n即使經過努力補救資料流程，仍可能會報告 SQL Injection 問題 (優先順序值會降低)。當 Fortify Static Code Analyzer 發現使用者控制的輸入有清楚的資料流程跡象，將用於建構 SQL 陳述式時，便會報告高/嚴重優先順序的資料流程問題。當 Fortify Static Code Analyzer 無法判斷資料的來源，但資料來源可以動態變更時，將會報告低/中優先順序的語義問題。在 SQL Injection 等部分特定弱點類別中，攻擊弱點的潛在影響會大於稽核誤報問題造成的不便，所以會採用此策略。\n\n## References\n\n1. SQL Injection Attacks by Example, S. J. Friedl, http://www.unixwiz.net/techtips/sql-injection.html\n2. Stop SQL Injection Attacks Before They Stop You, MSDN Magazine, P. Litwin\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "78E0700E-56FE-45A2-A11B-6A560F730576",
+          "shortDescription" : {
+            "text" : "Cross-Site Request Forgery"
+          },
+          "fullDescription" : {
+            "text" : "## Cross-Site Request Forgery\n\n表單發佈必須包含特定使用者機密，以避免攻擊者作出未經授權的要求。\n"
+          },
+          "help" : {
+            "text" : "防禦跨網站偽造要求 (CSRF) 弱點會在以下情況中出現：\n1. Web 應用程式使用了階段作業 Cookie。\n\n2. 應用程式在回應 HTTP 要求時，沒有驗證該要求是否經使用者同意產生。\n\n\n\nnonce 是與訊息一起傳送的加密隨機值，用於防止重複進行的攻擊。如果 HTTP 要求目前沒有包含其來源的證明，則負責處理 HTTP 要求的程式碼會容易受到 CSRF 的攻擊 (除非它不改變應用程式的狀態)。這代表使用階段作業 Cookie 的 Web 應用程式必須特別留意，以確保攻擊者沒辦法傳遞假造的要求去欺騙使用者。想像若 Web 應用程式允許管理人員提交以下表單建立新帳戶：\n\n    \n    \n    \n    ===== CODE START =====\n    &lt;form method=\"POST\" action=\"/new_user\" &gt;\n      Name of new user: &lt;input type=\"text\" name=\"username\"&gt;\n      Password for new user: &lt;input type=\"password\" name=\"user_passwd\"&gt;\n        &lt;input type=\"submit\" name=\"action\" value=\"Create User\"&gt;\n    &lt;/form&gt;\n===== CODE END =====\n\n\n\n\n攻擊者可能建立如以下的網站：\n\n    \n    \n    \n    ===== CODE START =====\n    &lt;form method=\"POST\" action=\"http://www.example.com/new_user\"&gt;\n      &lt;input type=\"hidden\" name=\"username\" value=\"hacker\"&gt;\n      &lt;input type=\"hidden\" name=\"user_passwd\" value=\"hacked\"&gt;\n    &lt;/form&gt;\n    &lt;script&gt;\n      document.usr_form.submit();\n    &lt;/script&gt;\n===== CODE END =====\n\n\n\n\n如果 `example.com` 管理員在網站上的有效階段作業期間造訪惡意頁面，則會在不知不覺中為攻擊者建立帳戶。這就是 CSRF 攻擊。這樣是有可能的，因為應用程式無法確定要求的來源。因此不論是使用者建立的或是由攻擊者建立的偽造操作，都會被視為合法的操作。攻擊者不會看到假造的要求所產生的網頁，所以這種攻擊技術只有對修改應用程式狀態的要求有用。\n\n在 URL 中傳送階段作業識別碼而非當作 Cookie 的應用程式不會有 CSRF 問題，因為攻擊者沒有辦法存取階段作業識別碼做為假造的要求。\n\n\n\n## Recommendations\n\n使用階段作業 Cookie 的應用程式必須包含每個發佈表單的一部分資訊，以供後端程式碼用來驗證要求的來源。其中一種方法是包含一個隨機要求識別碼或 nonce，如下所示：\n\n    \n    \n    \n    ===== CODE START =====\n    RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, \"/new_user\");\n      body = addToPost(body, new_username);\n      body = addToPost(body, new_passwd);\n      body = addToPost(body, request_id);\n      rb.sendRequest(body, new NewAccountCallback(callback));\n===== CODE END =====\n\n\n\n\n之後後端邏輯就能夠在處理其他的表單資料前，先驗證要求識別碼。如果可能，各伺服器要求應具備唯一的要求識別碼，而非讓特定工作階段的所有要求共用要求識別碼。就階段作業識別碼而言，攻擊者如果愈難猜出要求識別碼，就愈難發起一次成功的 CSRF 攻擊。權杖應無法輕易猜出，且其受保護的方式應與保護工作階段權杖的方式相同 (例如使用 SSLv3)。\n\n其他減緩技術包括：\n\n架構保護：大多數現代 Web 應用程式架構都內嵌 CSRF 保護，且會自動包括並驗證 CSRF 權杖。\n使用挑戰/回應控制項：強制客戶回應伺服器傳送的挑戰是針對 CSRF 的強大防禦措施。可用於此用途的一些挑戰有：CAPTCHA、密碼重新驗證和一次性權杖。\n檢查 HTTP Referer/Origin 表頭：攻擊者將無法在執行 CSRF 攻擊時欺騙這些表頭。因此，這些表頭將成為防止 CSRF 攻擊的有用方式。\n對階段作業 Cookie 進行雙重提交：除了傳送實際的階段作業 ID Cookie 外，還以隱藏表單值的形式傳送階段作業 ID Cookie，這是針對 CSRF 攻擊的良好保護方式。伺服器會先檢查這兩個值，確保其完全相同，然後再處理其餘的表單資料。若攻擊者代表使用者提交表單，將無法根據相同來源策略修改階段作業 ID Cookie 值。\n限制階段作業存留期：若使用 CSRF 攻擊存取受保護的資源，只有在作為攻擊的一部分而傳送的階段作業 ID 在伺服器上仍有效時，攻擊才有效。限制階段作業存留期會降低攻擊成功的可能。\n\nXSS 攻擊會破解此處描述的技術。有效的 CSRF 減緩措施包括 XSS 減緩技術。\n\n\n\n\n## Tips\n\nFortify Static Code Analyzer 標記可能執行 GET 或 POST 操作的所有 HTML 表單和 XMLHttpRequest 物件。稽核員必須確定每個表單對攻擊者而言，是否有做為 CSRF 目標的價值，及是否使用適當的減緩技術。\n\n## References\n\n1. Divide and Conquer: HTTP Response Splitting, Web Cache Poisoning Attacks, and Related Topics, A. Klein, http://www.packetstormsecurity.org/papers/general/whitepaper_httpresponse.pdf\n2. Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet, OWASP, https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html\n3. Fortify Taxonomy | Cross-Site Request Forgery, OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=Cross-Site+Request+Forgery\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "B7DFF4A8-9817-4418-A35B-E70D10DC825E",
+          "shortDescription" : {
+            "text" : "Unreleased Resource: Database"
+          },
+          "fullDescription" : {
+            "text" : "## Unreleased Resource: Database\n\n程式可能會無法釋放資料庫資源。\n"
+          },
+          "help" : {
+            "text" : "資源洩漏至少有兩種常見原因：\n\n- 錯誤條件以及其他異常情況。\n\n- 不確定程式的哪一部份負責釋放資源。\n\n大部分的 Unreleased Resource 問題都會導致一般軟體可靠性問題，但是如果攻擊者蓄意觸發資源洩漏的話，攻擊者就可能會藉由耗盡資源集區的方式來發動 Denial of Service 攻擊。\n\n範例 1：在正常條件下，以下程式碼會執行資料庫查詢，處理資料庫回傳的結果，最後關閉已配置的陳述式物件。但是如果在執行 SQL 或處理結果時發生異常，則不會關閉陳述式物件。如果這種情況時常發生的話，那麼資料庫將會用盡可用指標，並且無法再執行任何 SQL 查詢。\n    \n    \n    \n    ===== CODE START =====\n    Statement stmt = conn.createStatement();\n      ResultSet rs = stmt.executeQuery(CXN_SQL);\n      harvestResults(rs);\n      stmt.close();\n===== CODE END =====\n\n\n\n\n\r\n\n\n## Recommendations\n\n使用 try-with-resources 陳述式，確保任何實作 `AutoCloseable` 介面的任何資源會在 try 區塊結束時自動關閉。\n\n範例 2：以下 Java 程式碼使用 try-with-resources 陳述式來安全地管理 `Statement` 物件。\n    \n    \n    \n    ===== CODE START =====\n    try (Statement stmt = conn.createStatement()) {\n        ResultSet rs = stmt.executeQuery(CXN_SQL);\n        harvestResults(rs);\n      }\n===== CODE END =====\n\n\n\n\n範例 3：對於 Kotlin 來說，請改用 `Closeable.use()` 擴充函數：\n\n    \n    \n    \n    ===== CODE START =====\n    val stmt = conn.createStatement()\n      stmt.use {\n        val rs = stmt.executeQuery(CXN_SQL);\n        harvestResults(rs)\n      }\n===== CODE END =====\n\n\n\n\n如果無法使用 try-with-resources 陳述式，請確保釋放 `finally` 區塊中的資源。\n\n範例 4：以下程式碼會正確關閉 `finally` 區塊中的 `Statement` 物件。\n    \n    \n    \n    ===== CODE START =====\n    public void execCxnSql(Connection conn) {\n          Statement stmt;\n          try {\n            stmt = conn.createStatement();\n            ResultSet rs = stmt.executeQuery(CXN_SQL);\n            ...\n          }\n          finally {\n            if (stmt != null) {\n              safeClose(stmt);\n            }\n          }\n      }\n      \n      public static void safeClose(Statement stmt) {\n        if (stmt != null) {\n          try {\n            stmt.close();\n          } catch (SQLException e) {\n            log(e);\n          }\n        }\n      }\n===== CODE END =====\n\n\n\n\n此解決方案使用 Helper 函數，記錄嘗試關閉指令時可能發生的異常。每次要關閉指令時，大概就是重新使用此 Helper 函數的時候。\n\n此外，`execCxnSql` 方法不會將 `stmt` 物件初始化為 `null`。相反地，它會在呼叫 `safeClose()` 之前進行檢查，以確保 `stmt` 並非 `null`。如果沒有進行 `null` 檢查，Java 編譯器會報告可能無法初始化 `stmt`。這個選擇會利用 Java 可偵測尚未初始化變數的功能來進行判斷。如果 `stmt` 是以更複雜的方法初始化為 `null`，那麼編譯器就無法偵測到已使用 `stmt` 但未初始化的情況。\n\n\n## Tips\n\n請注意，關閉資料庫連線可能會自動或無法自動釋放連線物件相關的其他資源。如果應用程式使用連線池，最好在關閉連線之後確實關閉其他資源。如果應用程式未使用連線池，關閉資料庫連線時就會自動關閉其他資源。在此案例中，此弱點無效。\n\n絕不依賴 `finalize()` 來回收資源。若要叫用物件的 `finalize()` 方法，記憶體回收行程必須判斷該物件是否適合回收。因為並不需要執行記憶體回收行程，除非記憶體上的 JVM 不足。但是，無法保證可以隨時叫用物件的 `finalize()` 方法。當記憶體回收行程終於開始執行時，有可能在很短的時間內回收大量的資源，而這種情況可能會造成不穩定的效能並降低整體的系統總流量。當系統負載增加時，這種影響會變得更加明顯。\n\n最後，如果某個資源回收作業暫停 (例如需要透過網路與資料庫進行通訊)，那麼執行 `finalize()` 方法的執行緒也會暫停。\n\n## References\n\n1. FIO04-J. Release resources when they are no longer needed, CERT, https://www.securecoding.cert.org/confluence/display/java/FIO04-J.+Release+resources+when+they+are+no+longer+needed\n2. DOS-2: Release resources in all cases, Oracle, http://www.oracle.com/technetwork/java/seccodeguide-139067.html#1\n3. Fortify Taxonomy | Unreleased Resource: Database, OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=Unreleased+Resource&subcategory=Database\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "F972FE42-6C15-47D2-BD5C-448166A574C2",
+          "shortDescription" : {
+            "text" : "Poor Logging Practice: Use of a System Output Stream"
+          },
+          "fullDescription" : {
+            "text" : "## Poor Logging Practice: Use of a System Output Stream\n\n使用 System.out 或 System.err 而不使用專用的記錄工具，會使得程式的運作方式變得非常困難。\n"
+          },
+          "help" : {
+            "text" : "範例 1：程式設計師學習編寫的第一個 Java 程式會如下所示：\n\n    \n    \n    \n    ===== CODE START =====\n    public class MyClass\n      ...\n        System.out.println(\"hello world\");\n      ...\n    }\n===== CODE END =====\n\n\n\n\n當大多數的程式設計師繼續學習許多關於 Java 的細微之處時，有一部分人仍僅依賴這些基本知識，總是使用 `System.out.println()` 來撰寫訊息以執行標準輸出。\n\n問題是，直接在標準輸出或標準錯誤中寫入資訊，通常是用來當做沒有結構的記錄格式。結構化的記錄工具提供了各種功能，如記錄層級、統一的格式化、記錄識別碼、時間戳記，另外可能是最重要的，將記錄訊息引導至正確位置的功能。當系統輸出串流的使用與正確使用記錄功能的程式碼混合在一起，得出的結果通常是一個保存良好但缺少重要資訊的記錄檔。\n\n開發人員廣泛地認同對結構化記錄的需求，但很多人仍然繼續在程式開發前使用系統輸出串流功能。如果您正在檢閱的程式碼已過了程式開發的初始階段，使用 `System.out` 或 `System.err` 可能會在轉向結構化記錄系統時產生一個錯誤。\n\n\n## Recommendations\n\n使用 Java 記錄功能，而不使用 `System.out` 或者 `System.err`。 \n\n範例 2：例如，您可以使用 log4j 重新撰寫`Example 1` 中的「hello world」程式如下：\n\n    \n    \n    \n    ===== CODE START =====\n    import org.apache.log4j.Logger;\n    import org.apache.log4j.BasicConfigurator;\n    \n    public class MyClass {\n      private final static Logger logger =\n                Logger.getLogger(MyClass.class);\n    \n      ...\n        BasicConfigurator.configure();\n        logger.info(\"hello world\");\n      ...\n    }\n===== CODE END =====\n\n\n\n\n\n## Tips\n\nFortify Static Code Analyzer 會將在 `main()` 中使用 `System.out` 或 `System.err` 以及 `main()` 呼叫階層中的方法設成例外，所以不會將這類發生報告為 Poor Logging Practice: Use of a System Output Stream 問題。\n\n## References\n\n1. Fortify Taxonomy | Poor Logging Practice: Use of a System Output Stream, OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=Poor+Logging+Practice&subcategory=Use+of+a+System+Output+Stream\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "E05C0DB1-F798-4A77-9A6A-42ACEBA215E6",
+          "shortDescription" : {
+            "text" : "Password Management"
+          },
+          "fullDescription" : {
+            "text" : "## Password Management\n\n以純文字形式儲存密碼可能會危及系統安全。\n"
+          },
+          "help" : {
+            "text" : "當密碼以純文字形式儲存在應用程序的屬性或組態設定檔案時，會發生 Password Management 問題。 \n\n範例 1：以下程式碼從屬性檔案讀取密碼，並使用該密碼連接到資料庫。\n\n    \n    \n    \n    ===== CODE START =====\n    ...\n    Properties prop = new Properties();\n    prop.load(new FileInputStream(\"config.properties\"));\n    String password = prop.getProperty(\"password\");\n    \n    DriverManager.getConnection(url, usr, password);\n    ...\n===== CODE END =====\n\n\n\n\n此程式碼將會順利執行，任何人只要有 config.properties 的存取權，便能夠讀取 `password`的值。若心懷不軌的員工擁有此資訊的存取權，則他們可以利用此資訊來進入並破壞系統。\n\n在行動環境中，考慮到裝置遺失的可能性較高，因此密碼管理尤為重要。\n範例 2：以下程式碼會從 Android WebView 儲存區讀取使用者名稱與密碼，並使用這些資訊設定對檢視受保護頁面的驗證。\n    \n    \n    \n    ===== CODE START =====\n    ...\n    webview.setWebViewClient(new WebViewClient() {\n      public void onReceivedHttpAuthRequest(WebView view,\n            HttpAuthHandler handler, String host, String realm) {\n        String[] credentials = view.getHttpAuthUsernamePassword(host, realm);\n        String username = credentials[0];\n        String password = credentials[1];\n        handler.proceed(username, password);\n      }\n    });\n    ...\n===== CODE END =====\n\n\n\n\n預設狀況下，WebView 憑證會以純文字形式 (而非雜湊形式) 儲存。因此，若使用者擁有已取得 Root 權限的裝置 (或使用模擬器)，她即可讀取所儲存的指定網站密碼。\n\n\n## Recommendations\n\n勿以純文字形式儲存密碼。系統啟動時必須由管理員輸入密碼。如果此種方法不可行，還有一個安全性較差但通常較為合適的解決方法，那就是將密碼去模糊化，並將這些資料分散到系統各處，這樣攻擊者就必須取得並正確合併多個系統資源來解譯密碼。至少，在儲存密碼之前應進行雜湊處理。\n\n某些第三方產品聲稱能夠以安全的方式來管理密碼。例如，WebSphere Application Server 4.x 使用簡單的 XOR 加密式演算法來模糊化各個值，但也不要完全相信此種方法。WebSphere 和其他應用程式伺服器提供了過期的、相對安全性較弱的加密機制，這在安全性要求較高的環境中是不夠的。安全的做法是，使用者自己建立一個專屬的機制，這是目前最佳的方法。\n\n對於 Android 以及使用 SQLite 資料庫的任何其他平台，SQLCipher 是不錯的替代方案。SQLCipher 是 SQLite 資料庫的擴充，可為資料庫檔案提供透明的 256 位元 AES 加密。因此，可將憑證儲存在加密的資料庫中。\n\n範例 3：以下程式碼示範下載所需的二進位檔案後，如何將 SQLCipher 整合至 Android 應用程式，以及如何將憑證儲存到資料庫檔案內。\n    \n    \n    \n    ===== CODE START =====\n    import net.sqlcipher.database.SQLiteDatabase;\n    ...\n      SQLiteDatabase.loadLibs(this);\n      File dbFile = getDatabasePath(\"credentials.db\");\n      dbFile.mkdirs();\n      dbFile.delete();\n      SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(dbFile, \"credentials\", null);\n      db.execSQL(\"create table credentials(u, p)\");\n      db.execSQL(\"insert into credentials(u, p) values(?, ?)\", new Object[]{username, password});\n    ...\n===== CODE END =====\n\n\n\n\n請注意，對 `android.database.sqlite.SQLiteDatabase` 的參照已由對 `net.sqlcipher.database.SQLiteDatabase` 的參照代替。\n\n若要在 WebView 儲存區啟用加密，必須使用 `sqlcipher.so` 程式庫重新編譯 WebKit。\n\n\n## Tips\n\nFortify Secure Coding Rulepacks 會藉由尋找已知把密碼當作引數的函數，來識別 Password Management 問題。如果密碼是從程式外部提供的，而且在使用前沒有通過經驗證的模糊化程序，那麼 Fortify Static Code Analyzer 會把它標記為 Password Management 問題。\n\n要稽核 password management 問題，需要對程式進行追蹤：從密碼進入系統的那一個點開始，一直到結束使用的那一刻。尋找執行去模糊化的程式碼。若此程式碼不存在，則無法減少問題的風險。如果密碼通過去模糊化的函數，請確認用來保護密碼的演算法是否足夠可靠。\n\n在您相信密碼受到了充分的保護後，可為去模糊化程序編寫一個自訂的通過規則，表示密碼受到去模糊化程序的保護。如果在以後的應用程式分析中使用了這一個規則，那麼通過經認可的去模糊化規則驗證的密碼就不會再觸發 Password Management 弱點。\n\n有許多現代的 Web 架構提供執行使用者輸入驗證的機制 (包括 Struts 和 Struts 2)。為了突顯未驗證的輸入來源，Fortify 安全編碼檢查規則會降低 Fortify Static Code Analyzer 所報告之問題的攻擊可能性，並在使用框架驗證機制時提供支援證據的指標，以動態重新排列其優先順序。我們將此功能稱為「內容相關性排名」。為了進一步協助 Fortify 使用者進行稽核程序，Fortify Software 安全研發團隊提供了資料驗證專案範本，該範本會依據套用到其輸入來源的驗證機制，按資料夾對問題進行分組。\n\n## References\n\n1. SQLCipher., http://sqlcipher.net/\n2. INPUT-1: Validate inputs, Oracle, http://www.oracle.com/technetwork/java/seccodeguide-139067.html#5\n3. Fortify Taxonomy | Password Management, OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=Password+Management\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "85E603E0-2933-4F38-851F-341604F75CB9",
+          "shortDescription" : {
+            "text" : "Poor Error Handling: Overly Broad Catch"
+          },
+          "fullDescription" : {
+            "text" : "## Poor Error Handling: Overly Broad Catch\n\ncatch 區塊可處理種類眾多的異常，但可能會深陷於各種不應在此位置中考慮的各種問題。\n"
+          },
+          "help" : {
+            "text" : "多重 catch 區塊看上去可能比較繁瑣，但藉由捕捉高層級的類別 (比如 `Exception`)「濃縮」catch 區塊，可能會混淆那些需要特殊處理的異常，或是捕捉了不應該在程式中某階段捕捉的異常。捕捉範圍過大的異常，實質上是與「Java 分類定義異常」目的相違背的，並且隨著程式的增長且開始拋出新類型的異常時，此做法將導致嚴重的危險。因為，新的異常類型將不會被注意到。\n\n範例 1：以下引用的程式碼使用相同的方式處理三種不同的異常類型。\n\n    \n    \n    \n    ===== CODE START =====\n    try {\n        doExchange();\n      }\n      catch (IOException e) {\n        logger.error(\"doExchange failed\", e);\n      }\n      catch (InvocationTargetException e) {\n        logger.error(\"doExchange failed\", e);\n      }\n      catch (SQLException e) {\n        logger.error(\"doExchange failed\", e);\n      }\n===== CODE END =====\n\n\n\n\n其實，似乎使用單一 catch 區塊來處理這些異常會比較好一點，如下所示：\n\n    \n    \n    \n    ===== CODE START =====\n    try {\n        doExchange();\n      }\n      catch (Exception e) {\n        logger.error(\"doExchange failed\", e);\n      }\n===== CODE END =====\n\n\n\n\n但是，如果修改 `doExchange()` 後而拋出新的異常類型，而此異常需以不同方式來處理，那麼過大範圍的 catch 區塊將會阻止編譯器指出這個情況 (有新的異常拋出)。此外，新的 catch 區塊也可處理從 `RuntimeException` 衍生的異常，例如 `ClassCastException` 和 `NullPointerException`，而處理這些異常並不在程式設計師的意圖之內。\n\n\n## Recommendations\n\n請勿捕捉範圍過大的異常類別，例如 `Exception`、`Throwable`,、`Error` 或 `RuntimeException`，除非是非常高層級的程式或執行緒。\n\n## Tips\n\n如果有問題的 catch 區塊立即拋出了新的異常，Fortify Secure Coding Rulepacks 將不會標示出 overly broad catch 區塊。\n\n## References\n\n1. ERR07-J. Do not throw RuntimeException, Exception, or Throwable, CERT, https://www.securecoding.cert.org/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable\n2. Fortify Taxonomy | Poor Error Handling: Overly Broad Catch, OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=Poor+Error+Handling&subcategory=Overly+Broad+Catch\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        }, {
+          "id" : "4D69E4E2-959C-4EF8-84F4-A6489B288ABF",
+          "shortDescription" : {
+            "text" : "Cross-Site Scripting: Persistent"
+          },
+          "fullDescription" : {
+            "text" : "## Cross-Site Scripting: Persistent\n\n傳送未經驗證的資料至網路瀏覽器，會導致瀏覽器執行惡意的程式碼。\n"
+          },
+          "help" : {
+            "text" : "Cross-site scripting (XSS) 弱點會在以下情況中出現：\n\n1.資料從一個不可信賴的來源進入 Web 應用程式。在 Persistent XSS (也可稱為 Stored XSS) 案例中，不可信賴的來源通常為資料庫或其他後端資料儲存區，而在 Reflected XSS 案例中，來源通常為網頁要求。\n\n\n2.未經驗證且包含在動態內容中的資料將傳送給某個網頁使用者。\n\n傳送到網頁瀏覽器的惡意內容經常是以 JavaScript 片段的形式出現，但是也可能包含 HTML、Flash 或者瀏覽器執行的任何其他程式碼類型。以 XSS 為基礎的攻擊手段花樣百出且幾乎無窮無盡，但是它們通常會傳輸 Cookie 或其他階段作業資訊之類的私人資料給攻擊者、將受害者重新導向到攻擊者控制的網頁內容，或者利用易受攻擊的網站，在使用者的機器上執行其他惡意操作。\n\n\n範例 1：以下 JSP 程式碼片段會在資料庫中查詢具有指定識別碼的員工，並列印相應的員工姓名。\n\n    \n    \n    \n    ===== CODE START =====\n    &lt;%...\n    Statement stmt = conn.createStatement();\n    ResultSet rs = stmt.executeQuery(\"select * from emp where id=\"+eid);\n    if (rs != null) {\n       rs.next();\n       String name = rs.getString(\"name\");\n    }\n    %&gt;\n    \n    Employee Name: &lt;%= name %&gt;\n===== CODE END =====\n\n\n\n\n\n\n`name` 值正常運作時，此程式碼也會正常運作，但如果該值不正常運作時，則會完全無法避免程式碼遭受攻擊。這個程式碼之所以較不危險，是因為 `name` 值是從資料庫中讀取的，且顯然是由應用程式管理這些值的內容。但是，如果 `name` 的值是從使用者提供的資料中產生，那麼資料庫可能會成為提供惡意內容的管道。如果未對資料庫中儲存的所有資料進行適當的輸入驗證，那麼攻擊者可能在使用者的網路瀏覽器中執行惡意指令。這類型的攻擊稱為 Persistent XSS (或 Stored XSS)，其性質特別狡詐，因為間接的資料儲存方式而難以辨別該威脅，且該攻擊影響多個使用者的可能性可能提高。XSS 盜取會從存取提供造訪者訪客留名簿 (guestbook) 的網站開始。攻擊者會在他們的訪客留名簿項目中加入 JavaScript，所有後來前往訪客留名簿頁面的造訪者都可能會執行這些惡意程式碼。\n\n\n範例 2：以下 JSP 程式碼片段會從 HTTP 要求中讀取員工識別碼 `eid`，並將其向使用者顯示。\n\n    \n    \n    \n    ===== CODE START =====\n    &lt;% String eid = request.getParameter(\"eid\"); %&gt;\n    ...\n    Employee ID: &lt;%= eid %&gt;\n===== CODE END =====\n\n\n\n\n\n\n如 `Example 1` 所述，如果 `eid` 只包含標準英數字元，這個程式碼會正確地執行。如果 `eid` 中有包含中繼字元或來源程式碼中的值，那麼網路瀏覽器就會像顯示 HTTP 回應那樣執行程式碼。\n\n一開始，這似乎不會輕易受到攻擊。畢竟，誰會在自己的電腦中輸入會執行惡意程式碼的 URL？其實，真正的危險在於攻擊者會建立惡意的 URL，接著使用電子郵件或社交工程病毒誘騙受害者透過連結前往該 URL。當受害者按下該連結時，他們即不知不覺地透過易受攻擊的 Web 應用程式，將惡意內容資訊帶回他們自己的電腦。這個利用易受攻擊的 Web 應用程式進行攻擊的機制就是通常所知的 Reflected XSS。\n\n有人認為在行動環境中，典型的 Web 應用程式弱點 (例如跨網站指令碼) 不會產生影響，因為使用者為何會攻擊自己呢？但是請謹記，行動平台的本質是從多種來源下載，並在相同裝置上一起執行的應用程式。在金融應用程式旁執行惡意程式碼的可能性很高，這必然會擴大行動應用程式的受攻擊面，將程序之間的通訊包括在內。\n\n範例 3：以下程式碼會在 Android 的 WebView 中啟用 JavaScript (預設狀況下停用 JavaScript)，並根據從 Android 用意接收的值載入頁面。\n\n    \n    \n    \n    ===== CODE START =====\n    ...\n            WebView webview = (WebView) findViewById(R.id.webview);\n            webview.getSettings().setJavaScriptEnabled(true);\n            String url = this.getIntent().getExtras().getString(\"url\");\n            webview.loadUrl(url);\n    ...\n===== CODE END =====\n\n\n\n\n若 `url` 的值以 `javascript:` 開頭，隨後的 JavaScript 程式碼將在網頁範圍中的 WebView 內執行。\n\n如同範例中所示，XSS 的弱點是由 HTTP 回應中包含未經驗證資料的程式碼所引起的。XSS 攻擊有三種途徑可攻擊受害者：\n\n- 如 `Example 1` 所述，應用程式會將危險資料儲存到資料庫或其他可信任的資料儲存區中。這些危險資料隨後會被回讀到應用程式，並包含在動態內容中。Persistent XSS 攻擊會在以下情況出現：攻擊者把危險內容插入到之後會讀取的資料儲存區中，並包含在動態內容中。從攻擊者的角度來看，插入惡意內容的最佳位置莫過於一個會對很多使用者或特別感興趣的使用者顯示的區域。感興趣的使用者通常會在應用程式中擁有較高的權限，或者會與敏感資料進行互動，且這些資料對攻擊者而言很有利用價值。如果其中一個使用者執行了惡意內容，攻擊者可能會代替使用者去執行需要權限許可的作業，或者取得存取使用者專屬敏感資料的權限。\n\n- 如 `Example 2` 所述，會直接從 HTTP 要求中讀取資料，並在 HTTP 回應中回傳資料。當攻擊者誘使使用者提供危險內容給易受攻擊的 Web 應用程式，接著這些危險內容就會回傳給使用者並由在網路瀏覽器中執行，這時就會出現 Reflected XSS 攻擊行為。傳遞惡意內容最常用的機制就是，將惡意內容當作參數隱藏在公開發表的 URL 中，或者以電子郵件方式直接傳送給受害者。以這種方法建立的 URL 會構成許多網路釣魚 (phishing) 架構的核心，攻擊者可以藉此誘使受害者去造訪一個指向到易受攻擊網站的 URL。網站將攻擊者的內容回傳給使用者之後，就會執行這些內容，並接著從使用者的電腦將可能包含階段作業資訊的 Cookie 之類的私人資訊傳給攻擊者，或者執行其他惡意活動。\n\n- 如 `Example 3` 所述，應用程式以外的來源會在資料庫或是其他資料儲存區中儲存危險資料，且之後這些危險資料會被當作信賴的資料回讀到應用程式，並會包含在動態內容中。\n\n\n\n有許多現代的 Web 架構提供執行使用者輸入驗證的機制 (包括 Struts 和 Spring MVC)。為了突顯未驗證的輸入來源，Fortify 安全編碼檢查規則會降低 Fortify Static Code Analyzer 所報告之問題的攻擊可能性，並在使用框架驗證機制時提供支援證據的指標，以動態重新排列其優先順序。我們將此功能稱為「內容相關性排名」。為了進一步協助 Fortify 使用者進行稽核程序，Fortify Software 安全研發團隊提供了資料驗證專案範本，該範本會依據套用到其輸入來源的驗證機制，按資料夾對問題進行分組。\n\n\n\n## Recommendations\n\n防止 XSS 的解決方法是：確保在需要的位置進行驗證，並設定相關屬性以防止漏洞。\n\n由於 XSS 弱點會在應用程式於輸出中包含惡意資料時出現，所以合理方法就是，在應用程式輸出資料之前馬上驗證資料。然而，由於 Web 應用程式經常會為了產生動態內容而包含複雜且難以理解的程式碼，所以此方法容易遺漏錯誤 (遺漏驗證)。降低此風險的有效方法即為執行 XSS 輸入驗證。\n\nWeb 應用程式必須驗證所有輸入以防止出現其他弱點 (如 SQL Injection)，因此比較簡單的方法就是，加強應用程式現有的輸入驗證機制，納入 XSS 檢查。儘管有一定的作用，但是 XSS 的輸入驗證並不能取代嚴格的輸出驗證。應用程式可能會透過共用資料存放區或者其他信賴的來源接受輸入，而該資料存放區可能會從未執行適當輸入驗證的來源接受輸入。因此，應用程式不能間接依賴此資料或任何其他資料的安全性。這代表杜絕 XSS 弱點的最佳方法就是，驗證所有進入應用程式的資料，以及所有離開應用程式並傳送到使用者的資料。\n\n驗證 XSS 最安全的方法，是建立一個安全字元的允許清單，只允許清單上的字元可以出現在 HTTP 內容，並僅接受由經過檢驗的集合中字元組成的輸入。例如，有效的使用者名稱可能僅包含英數字元，或電話號碼可能僅包含數字 0-9。然而，這種解決方式在 Web 應用程式中經常是不可行的，因為很多字元對瀏覽器來說都具有特殊意義，將這些字元編碼之後，必須將它們視為有效輸入。例如，一個網站設計公告欄就必須接受來自於使用者的 HTML 片段。\n\n更具彈性但安全性較低的方法是實作拒絕清單，能在使用輸入前選擇性地拒絕或避開可能有危險的字元。若要建立這類名單，首先必須了解那些對網頁瀏覽器來說有特殊意義的字元集。雖然 HTML 標準會定義具有特殊意義的字元，但是許多網頁瀏覽器會嘗試修正 HTML 中的常見錯誤，而且在特定環境中可能會將其他字元視為有特殊意義。這就是為什麼我們不建議使用拒絕清單做為預防 XSS 的方式。Carnegie Mellon 大學軟體工程學院 (Software Engineering Institute) 下的 CERT(R) 合作中心 (CERT(R) Coordination Center) 提供了在各種環境中具有特殊意義的字元資訊 [1]：\n\n在區塊等級 (block-level) 元素的內容中 (位於文字段落中間)：\n\n-「&lt;」是特殊字元，因為它會引入標籤。\n\n-「&amp;」是特殊字元，因為它會引入字元實體。\n\n-「&gt;」是特殊字元，因為某些瀏覽器將其視為特殊字元，會假設該頁面的作者想加入開頭的「&lt;」，卻不小心遺漏掉了。\n\n以下原則適用於屬性值：\n\n- 在以雙引號括住的屬性值中，雙引號之所以特殊，是因為它們標記了屬性值的結尾。\n\n- 在以單引號結尾的屬性值中，單引號是特殊字元，因為它們標記了屬性值的結尾。\n\n- 在沒有任何引號的屬性值中，空格字元 (例如空格和定位字元) 也是特殊字元。\n\n-「&amp;」和特定屬性一起使用時會變成特殊字元，因為它會引導出一個字元實體。 \n\n舉例來說，在 URL 中，搜索引擎可能會在結果頁面提供一個連結，讓使用者可以按一下該連結來重新執行搜尋。這個方法可以運用在編寫 URL 中的搜尋查詢，此動作會引導出其他特殊字元：\n\n- 空格、定位字元和換行符號都是特殊字元，因為它們標記了 URL 的結尾。\n\n-「&amp;」為特殊字元，因為它會引導出一個字元實體或分隔 CGI 參數。\n\n- 非 ASCII 字元 (就是所有在 ISO-8859-1 編碼表中大於 127 的字元) 不允許出現在 URL 中，所以它們在此內容中被視為特殊字元。\n\n- 每當伺服器端程式碼對以 HTTP 逸出序列編碼的參數進行解碼時，就必須從輸入中篩選 \"%\" 符號。例如，對於諸如「%68%65%6C%6C%6F」的輸入，必須篩選「%」，才能在網頁上顯示「hello」。\n\n\n在 &lt;SCRIPT&gt; &lt;/SCRIPT&gt; 的正文中：\n\n- 將文字直接插入原有指令碼標籤時，必須篩選分號、括號、中括號以及換行字元。\n\n伺服器端 Script：\n\n- 如果伺服器端 Script 會將輸入中的任何驚嘆號字元 (!) 轉換為輸出中的雙引號字元時 (\")，則可能需要進行更多篩選。 \n\n其他可能性：\n\n- 若攻擊者提交 UTF-7 編碼的要求，特殊字元「&lt;」會顯示為「+ADw-」，並且可能會避開篩選。如果輸出包含在沒有明確指定編碼格式的頁面中，某些瀏覽器會嘗試以智慧方式來根據內容識別編碼 (在此情況下為 UTF-7)。\n\n在您確定在應用程式中針對 XSS 攻擊執行驗證的正確要點，以及驗證時要考慮的特殊字元後，那麼下一個挑戰就是決定驗證過程中處理特殊字元的方法。如果應用程式將某些特殊字元認定為無效輸入，那麼您可以拒絕任何包含這些被視為無效特殊字元的輸入。第二種選擇是以篩選方式移除特殊字元。然而，篩選所產生的副作用在於會改變篩選內容的顯示樣貌。但是在需要完整顯示輸入內容時，這種情況是無法接受的。\n\n如果必須接受包含特殊字元的輸入且必須準確顯示輸入內容，驗證動作一定要編碼所有特殊字元，以移除特殊字元代表的意義。官方 HTML 規格 [2] 提供了特殊字元對應的 ISO 8859-1 編碼值完整清單。\n\n很多應用程式伺服器都試圖避免應用程式出現 Cross-site scripting 弱點，方法是為負責設定某個特定 HTTP 回應內容的函數提供各種實作，以驗證是否存在進行 Cross-site scripting 攻擊的字元。請勿依賴執行應用程式的伺服器來確保應用程式的安全性。對於任何開發的應用程式，無法保證在其存留期內將在哪些應用程式伺服器上執行。隨著標準和已知盜取方式不斷地演變，無法保證應用程式伺服器會繼續保持同步。\n\n\n## Tips\n\nFortify Secure Coding Rulepack 會在將不可信賴的資料寫入資料庫時針對 SQL Injection 問題發出警告，同時會將資料庫視為不可信賴的資料的來源，如此會導致出現 XSS 弱點。如果資料庫在您的環境中是可信賴的來源，請使用自訂篩選器以篩選包含 DATABASE 感染標籤或是從資料庫來源產生的資料流問題。不過，驗證從資料庫讀取的所有內容通常仍是不錯的想法。\n\n即使 URL 編碼不可信賴的資料會避免許多 XSS 攻擊，有些瀏覽器還是會在傳送內容到 JavaScript 解譯器之前，先自動在 DOM (Document Object Model，文件物件模組) 中的特定位置解碼內容。為了反映出此危險，Rulepacks 不再將 URL 編碼常式視為足以避免 Cross-Site Scripting。以 URL 進行編碼的資料值和隨後的輸出將導致 Fortify 報告跨網站指令碼：Poor Validation 弱點。\n\n## References\n\n1. Understanding Malicious Content Mitigation for Web Developers, CERT, https://resources.sei.cmu.edu/library/asset-view.cfm?assetid=496719#9\n2. HTML 4.01 Specification, W3, https://www.w3.org/TR/html401/sgml/entities.html#h-24.2\n3. Attacks on WebView in the Android System, Tongbo Luo, Hao Hao, Wenliang Du, Yifei Wang, and Heng Yin, http://www.cis.syr.edu/~wedu/Research/paper/webview_acsac2011.pdf\n4. Bifocals: Analyzing WebView Vulnerabilities in Android Applications, Erika Chin and David Wagner, https://people.eecs.berkeley.edu/~daw/papers/bifocals-wisa13.pdf\n5. INJECT-3: XML and HTML generation requires care, Oracle, http://www.oracle.com/technetwork/java/seccodeguide-139067.html#3\n6. INPUT-1: Validate inputs, Oracle, http://www.oracle.com/technetwork/java/seccodeguide-139067.html#5\n7. Fortify Taxonomy | Cross-Site Scripting: Persistent, OpenText Fortify, https://vulncat.fortify.com/zh-tw/detail?category=Cross-Site+Scripting&subcategory=Persistent\n\n  \nCopyright (c) 2026 Open Text\n"
+          }
+        } ],
+        "properties" : {
+          "copyright" : "Copyright (c) 2026 Open Text",
+          "applicationName" : "LoginProject",
+          "applicationId" : 2,
+          "versionName" : "2",
+          "versionId" : 5
+        }
+      }
+    },
+    "results" : [ {
+      "ruleId" : "4B673A45-9AD5-4CBA-945B-11A3702CDF57",
+      "message" : {
+        "text" : "透過不可信賴來源的輸入來建構的動態 SQL 陳述式可讓攻擊者修改陳述式的意義或是執行任意的 SQL 指令。 \n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/54/?engineType=SCA&issue=E05BD34011271AF74D20BA4CC2F53A2E&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "E05BD34011271AF74D20BA4CC2F53A2E"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/LoginModel.java"
+          },
+          "region" : {
+            "startLine" : 9,
+            "endLine" : 9,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:9 - executeQuery()"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 9
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:9 - executeQuery()"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 9
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "97B9518A-F1BC-44CE-BEB1-D5FBDDFCCF9D",
+      "message" : {
+        "text" : "如果 Servlet 沒有捕捉到所有異常，它可能會洩漏除錯資訊，而協助攻擊者訂定攻擊計畫。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/33/?engineType=SCA&issue=0D85D8B3021CC15E7F4434F4B9EFED84&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "0D85D8B3021CC15E7F4434F4B9EFED84"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/LoginServlet.java"
+          },
+          "region" : {
+            "startLine" : 30,
+            "endLine" : 30,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:30 - Function: doGet"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 30
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:30 - Function: doGet"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 30
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "97B9518A-F1BC-44CE-BEB1-D5FBDDFCCF9D",
+      "message" : {
+        "text" : "如果 Servlet 沒有捕捉到所有異常，它可能會洩漏除錯資訊，而協助攻擊者訂定攻擊計畫。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/52/?engineType=SCA&issue=D1CED827D763E2CF7E0809CC14ED711D&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "D1CED827D763E2CF7E0809CC14ED711D"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/LoginServlet.java"
+          },
+          "region" : {
+            "startLine" : 38,
+            "endLine" : 38,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:38 - Function: doPost"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 38
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:38 - Function: doPost"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 38
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "F972FE42-6C15-47D2-BD5C-448166A574C2",
+      "message" : {
+        "text" : "使用 <code>System.out</code> 或 <code>System.err</code> 而不使用專用的記錄工具，會使得程式的運作方式變得非常困難。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/43/?engineType=SCA&issue=62793514B5C14E58E34A6C82F6EAA2FC&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "62793514B5C14E58E34A6C82F6EAA2FC"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/LoginServlet.java"
+          },
+          "region" : {
+            "startLine" : 40,
+            "endLine" : 40,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:40 - FunctionCall: println"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 40
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:40 - FunctionCall: println"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 40
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "CBDB6290-DF73-42E1-8D9E-3B5C4B629761",
+      "message" : {
+        "text" : "將可信賴和不可信賴的資料混合在同一資料結構中，這麼做會讓程式設計師誤信未經驗證的資料。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/56/?engineType=SCA&issue=EC5C8978193E476E43268D652AE9A30E&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "EC5C8978193E476E43268D652AE9A30E"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/LoginServlet.java"
+          },
+          "region" : {
+            "startLine" : 48,
+            "endLine" : 48,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : " - login URL - /login.do"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "UNKNOWN"
+                },
+                "region" : {
+                  "startLine" : 1
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:9 - executeQuery(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 9
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:48 - setAttribute(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 48
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:9 - executeQuery(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 9
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:9 - Assignment to this.rs"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 9
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:13 - getString(this : return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 13
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:13 - Assignment to sno"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 13
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:13 - Taint change on sno"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 13
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:14 - Return"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 14
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:47 - check(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 47
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:47 - Assignment to res"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 47
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:48 - setAttribute(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 48
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "FE4EADF2-7055-4C36-863E-5A01C4A0E1A4",
+      "message" : {
+        "text" : "顯示系統資料或除錯資訊有助於攻擊者瞭解系統並制訂攻擊計畫。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/31/?engineType=SCA&issue=08BD92B58521B0F455A66A26EE6288E1&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "08BD92B58521B0F455A66A26EE6288E1"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/LoginServlet.java"
+          },
+          "region" : {
+            "startLine" : 54,
+            "endLine" : 54,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:54 - printStackTrace()"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 54
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:54 - printStackTrace()"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 54
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "E1B32227-C0BD-4A57-9C34-6794D9089A21",
+      "message" : {
+        "text" : "攻擊者可透過應用程式建立無法預期的控制流路徑，而這有可能會避開安全性檢查。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/42/?engineType=SCA&issue=5BA1400984294C9BF4B7411857C65201&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "5BA1400984294C9BF4B7411857C65201"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/MyContextListener.java"
+          },
+          "region" : {
+            "startLine" : 27,
+            "endLine" : 27,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:22 - getInitParameter(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 22
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:27 - forName(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 27
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:22 - getInitParameter(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 22
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:22 - Assignment to driver"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 22
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:27 - forName(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 27
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "E05C0DB1-F798-4A77-9A6A-42ACEBA215E6",
+      "message" : {
+        "text" : "以純文字形式儲存密碼可能會危及系統安全。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/46/?engineType=SCA&issue=88F5DB5C1FEF4C0BCA0EDC265177D3F9&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "88F5DB5C1FEF4C0BCA0EDC265177D3F9"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/MyContextListener.java"
+          },
+          "region" : {
+            "startLine" : 28,
+            "endLine" : 28,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:25 - getInitParameter(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 25
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:28 - getConnection(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 28
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:25 - getInitParameter(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 25
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:25 - Assignment to pass"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 25
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:28 - getConnection(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 28
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "B7DFF4A8-9817-4418-A35B-E70D10DC825E",
+      "message" : {
+        "text" : "程式可能會無法釋放資料庫資源。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/49/?engineType=SCA&issue=92023524C89EC71DA935E356D0E8C099&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "warning",
+      "properties" : {
+        "security-severity" : "8.9",
+        "fortify-severity" : "High"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "92023524C89EC71DA935E356D0E8C099"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/MyContextListener.java"
+          },
+          "region" : {
+            "startLine" : 28,
+            "endLine" : 28,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:28 - conn = getConnection(...)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 28
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:28 - conn = getConnection(...)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 28
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:28 - conn refers to a database connection"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 28
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:31 - conn no longer refers to a database connection"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 31
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:31 - conn end scope : Database resource leaked"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 31
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "EDD8E0B5-D8F2-4F56-A20B-549E3880318B",
+      "message" : {
+        "text" : "J2EE 標準會禁止直接連線管理。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/55/?engineType=SCA&issue=E4385F2C90FC80BDADB7174333CB0B19&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "E4385F2C90FC80BDADB7174333CB0B19"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/MyContextListener.java"
+          },
+          "region" : {
+            "startLine" : 28,
+            "endLine" : 28,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:28 - getConnection()"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 28
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:28 - getConnection()"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 28
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "F972FE42-6C15-47D2-BD5C-448166A574C2",
+      "message" : {
+        "text" : "使用 <code>System.out</code> 或 <code>System.err</code> 而不使用專用的記錄工具，會使得程式的運作方式變得非常困難。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/45/?engineType=SCA&issue=88008082069DDB8934BAC242EE9E27DD&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "88008082069DDB8934BAC242EE9E27DD"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/MyContextListener.java"
+          },
+          "region" : {
+            "startLine" : 30,
+            "endLine" : 30,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:30 - FunctionCall: println"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 30
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:30 - FunctionCall: println"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 30
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "85E603E0-2933-4F38-851F-341604F75CB9",
+      "message" : {
+        "text" : "catch 區塊可處理種類眾多的異常，但可能會深陷於各種不應在此位置中考慮的各種問題。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/51/?engineType=SCA&issue=C6BA8172A73EC89C2162EBDC5635A3D0&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "C6BA8172A73EC89C2162EBDC5635A3D0"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/MyContextListener.java"
+          },
+          "region" : {
+            "startLine" : 32,
+            "endLine" : 32,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:32 - CatchBlock"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 32
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:32 - CatchBlock"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 32
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "FE4EADF2-7055-4C36-863E-5A01C4A0E1A4",
+      "message" : {
+        "text" : "顯示系統資料或除錯資訊有助於攻擊者瞭解系統並制訂攻擊計畫。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/34/?engineType=SCA&issue=0DD8B02E4BFE39436C2920BB34F94924&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "0DD8B02E4BFE39436C2920BB34F94924"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/MyContextListener.java"
+          },
+          "region" : {
+            "startLine" : 33,
+            "endLine" : 33,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:33 - printStackTrace()"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 33
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "MyContextListener.java:33 - printStackTrace()"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/MyContextListener.java"
+                },
+                "region" : {
+                  "startLine" : 33
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "78E0700E-56FE-45A2-A11B-6A560F730576",
+      "message" : {
+        "text" : "表單發佈必須包含特定使用者機密，以避免攻擊者作出未經授權的要求。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/30/?engineType=SCA&issue=047D98CD01E929B21C861748747AA403&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "047D98CD01E929B21C861748747AA403"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "login.html"
+          },
+          "region" : {
+            "startLine" : 16,
+            "endLine" : 16,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "login.html:16"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.html"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.html:16"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.html"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "4280F38B-9FDB-454E-B495-89CF45CD51B7",
+      "message" : {
+        "text" : "程式可能會解除參照 Null 指標，因為它不會檢查可能傳回 <code>null</code> 的函數回傳值。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/37/?engineType=SCA&issue=3C32B62872F71A75A0DC74034AEFC341&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "3C32B62872F71A75A0DC74034AEFC341"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "login.jsp"
+          },
+          "region" : {
+            "startLine" : 15,
+            "endLine" : 15,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:15 - f = getAttribute(...) : ServletRequest.getAttribute may return NULL"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 15
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:15 - f = getAttribute(...) : ServletRequest.getAttribute may return NULL"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 15
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:15 - f may be null"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 15
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:16 - f.substring(...) : f used without null check"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "4280F38B-9FDB-454E-B495-89CF45CD51B7",
+      "message" : {
+        "text" : "程式可能會解除參照 Null 指標，因為它不會檢查可能傳回 <code>null</code> 的函數回傳值。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/35/?engineType=SCA&issue=2FE6DD40847D6E8E121FE9262C1ED052&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "2FE6DD40847D6E8E121FE9262C1ED052"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "login.jsp"
+          },
+          "region" : {
+            "startLine" : 19,
+            "endLine" : 19,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:19 - getAttribute(...) : ServletRequest.getAttribute may return NULL"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 19
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:16 - Branch taken: f.substring(0, 1).equals(\"1\")"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:19 - getAttribute(...) : ServletRequest.getAttribute may return NULL"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 19
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:19 - request.getAttribute(\"res\").substring(...) : return value used without null check"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 19
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "4D69E4E2-959C-4EF8-84F4-A6489B288ABF",
+      "message" : {
+        "text" : "傳送未經驗證的資料至網路瀏覽器，會導致瀏覽器執行惡意的程式碼。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/50/?engineType=SCA&issue=B096458EEBEC91D30EA97721FF2F280D&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "warning",
+      "properties" : {
+        "security-severity" : "10.0",
+        "fortify-severity" : "Critical"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "B096458EEBEC91D30EA97721FF2F280D"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "login.jsp"
+          },
+          "region" : {
+            "startLine" : 19,
+            "endLine" : 19,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : " - login URL - /login.do"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "UNKNOWN"
+                },
+                "region" : {
+                  "startLine" : 1
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:9 - executeQuery(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 9
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:19 - print(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 19
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:9 - executeQuery(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 9
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:9 - Assignment to this.rs"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 9
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:13 - getString(this : return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 13
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:13 - Assignment to sno"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 13
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:13 - Taint change on sno"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 13
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginModel.java:14 - Return"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginModel.java"
+                },
+                "region" : {
+                  "startLine" : 14
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:47 - check(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 47
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:47 - Assignment to res"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 47
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "LoginServlet.java:48 - setAttribute(1 : this['res'])"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/LoginServlet.java"
+                },
+                "region" : {
+                  "startLine" : 48
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:19 - getAttribute(this['res'] : return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 19
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:19 - substring(this : return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 19
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:19 - print(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 19
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "78E0700E-56FE-45A2-A11B-6A560F730576",
+      "message" : {
+        "text" : "表單發佈必須包含特定使用者機密，以避免攻擊者作出未經授權的要求。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/47/?engineType=SCA&issue=8F6BBA0C2758E9BCB93F8446735E003D&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "8F6BBA0C2758E9BCB93F8446735E003D"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "login.jsp"
+          },
+          "region" : {
+            "startLine" : 25,
+            "endLine" : 25,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:25"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 25
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "login.jsp:25"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "login.jsp"
+                },
+                "region" : {
+                  "startLine" : 25
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "78E0700E-56FE-45A2-A11B-6A560F730576",
+      "message" : {
+        "text" : "表單發佈必須包含特定使用者機密，以避免攻擊者作出未經授權的要求。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/57/?engineType=SCA&issue=F2B3E7F09D33D83C941E11AB290E7BF4&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "F2B3E7F09D33D83C941E11AB290E7BF4"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "register.html"
+          },
+          "region" : {
+            "startLine" : 36,
+            "endLine" : 36,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "register.html:36"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "register.html"
+                },
+                "region" : {
+                  "startLine" : 36
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "register.html:36"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "register.html"
+                },
+                "region" : {
+                  "startLine" : 36
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "4280F38B-9FDB-454E-B495-89CF45CD51B7",
+      "message" : {
+        "text" : "程式可能會解除參照 Null 指標，因為它不會檢查可能傳回 <code>null</code> 的函數回傳值。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/39/?engineType=SCA&issue=4B46D0EFD19B8C2C48CC00079DB08926&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "4B46D0EFD19B8C2C48CC00079DB08926"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "register.jsp"
+          },
+          "region" : {
+            "startLine" : 11,
+            "endLine" : 11,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "register.jsp:11 - f = getAttribute(...) : ServletRequest.getAttribute may return NULL"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "register.jsp"
+                },
+                "region" : {
+                  "startLine" : 11
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "register.jsp:11 - f = getAttribute(...) : ServletRequest.getAttribute may return NULL"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "register.jsp"
+                },
+                "region" : {
+                  "startLine" : 11
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "register.jsp:11 - f may be null"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "register.jsp"
+                },
+                "region" : {
+                  "startLine" : 11
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "register.jsp:12 - f.equals(...) : f used without null check"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "register.jsp"
+                },
+                "region" : {
+                  "startLine" : 12
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "97B9518A-F1BC-44CE-BEB1-D5FBDDFCCF9D",
+      "message" : {
+        "text" : "如果 Servlet 沒有捕捉到所有異常，它可能會洩漏除錯資訊，而協助攻擊者訂定攻擊計畫。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/40/?engineType=SCA&issue=4C80BB31FC4828FD5B90F74DBFB384F9&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "4C80BB31FC4828FD5B90F74DBFB384F9"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/registerServlet.java"
+          },
+          "region" : {
+            "startLine" : 32,
+            "endLine" : 32,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:32 - Function: doGet"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 32
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:32 - Function: doGet"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 32
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "97B9518A-F1BC-44CE-BEB1-D5FBDDFCCF9D",
+      "message" : {
+        "text" : "如果 Servlet 沒有捕捉到所有異常，它可能會洩漏除錯資訊，而協助攻擊者訂定攻擊計畫。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/58/?engineType=SCA&issue=FCCFD957687589A021B1ADD593FB3FD6&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "FCCFD957687589A021B1ADD593FB3FD6"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/registerServlet.java"
+          },
+          "region" : {
+            "startLine" : 40,
+            "endLine" : 40,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:40 - Function: doPost"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 40
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:40 - Function: doPost"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 40
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "F972FE42-6C15-47D2-BD5C-448166A574C2",
+      "message" : {
+        "text" : "使用 <code>System.out</code> 或 <code>System.err</code> 而不使用專用的記錄工具，會使得程式的運作方式變得非常困難。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/36/?engineType=SCA&issue=3634AD4EBCD44C770289CB4C84EFC8FC&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "3634AD4EBCD44C770289CB4C84EFC8FC"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/registerServlet.java"
+          },
+          "region" : {
+            "startLine" : 62,
+            "endLine" : 62,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:62 - FunctionCall: println"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 62
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:62 - FunctionCall: println"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 62
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "E04D3E1F-2D8C-400A-BB55-7DA143F987E3",
+      "message" : {
+        "text" : "透過不可信賴來源的輸入來建構的動態 SQL 陳述式可讓攻擊者修改陳述式的意義或是執行任意的 SQL 指令。 \n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/32/?engineType=SCA&issue=08D07C1407753721CFABDE9FE7DFE2CF&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "warning",
+      "properties" : {
+        "security-severity" : "10.0",
+        "fortify-severity" : "Critical"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "08D07C1407753721CFABDE9FE7DFE2CF"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/registerServlet.java"
+          },
+          "region" : {
+            "startLine" : 64,
+            "endLine" : 64,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : " - register URL - /register.do"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "UNKNOWN"
+                },
+                "region" : {
+                  "startLine" : 1
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:45 - getParameter(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 45
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:64 - executeUpdate(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 64
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:45 - getParameter(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 45
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:45 - Assignment to pass"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 45
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:63 - Assignment to adrui.registerServlet.sql"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 63
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:64 - executeUpdate(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 64
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "E04D3E1F-2D8C-400A-BB55-7DA143F987E3",
+      "message" : {
+        "text" : "透過不可信賴來源的輸入來建構的動態 SQL 陳述式可讓攻擊者修改陳述式的意義或是執行任意的 SQL 指令。 \n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/44/?engineType=SCA&issue=7979A68DB1EB9D685F539D165EC5EE29&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "warning",
+      "properties" : {
+        "security-severity" : "10.0",
+        "fortify-severity" : "Critical"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "7979A68DB1EB9D685F539D165EC5EE29"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/registerServlet.java"
+          },
+          "region" : {
+            "startLine" : 64,
+            "endLine" : 64,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : " - register URL - /register.do"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "UNKNOWN"
+                },
+                "region" : {
+                  "startLine" : 1
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:44 - getParameter(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 44
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:64 - executeUpdate(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 64
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:44 - getParameter(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 44
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:44 - Assignment to user"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 44
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:63 - Assignment to adrui.registerServlet.sql"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 63
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:64 - executeUpdate(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 64
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "E04D3E1F-2D8C-400A-BB55-7DA143F987E3",
+      "message" : {
+        "text" : "透過不可信賴來源的輸入來建構的動態 SQL 陳述式可讓攻擊者修改陳述式的意義或是執行任意的 SQL 指令。 \n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/48/?engineType=SCA&issue=9147C5CEBDA6DE4FE869C32D0183E3F5&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "warning",
+      "properties" : {
+        "security-severity" : "10.0",
+        "fortify-severity" : "Critical"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "9147C5CEBDA6DE4FE869C32D0183E3F5"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/registerServlet.java"
+          },
+          "region" : {
+            "startLine" : 64,
+            "endLine" : 64,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : " - register URL - /register.do"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "UNKNOWN"
+                },
+                "region" : {
+                  "startLine" : 1
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:43 - getParameter(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 43
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:64 - executeUpdate(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 64
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:43 - getParameter(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 43
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:43 - Taint change on getParameter(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 43
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:43 - Assignment to sno"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 43
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:43 - Taint change on sno"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 43
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:63 - Assignment to adrui.registerServlet.sql"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 63
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:64 - executeUpdate(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 64
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "FE4EADF2-7055-4C36-863E-5A01C4A0E1A4",
+      "message" : {
+        "text" : "顯示系統資料或除錯資訊有助於攻擊者瞭解系統並制訂攻擊計畫。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/41/?engineType=SCA&issue=53EE9CDA46A819785E847488896323C2&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "53EE9CDA46A819785E847488896323C2"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "src/adrui/registerServlet.java"
+          },
+          "region" : {
+            "startLine" : 72,
+            "endLine" : 72,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:72 - printStackTrace()"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 72
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "registerServlet.java:72 - printStackTrace()"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "src/adrui/registerServlet.java"
+                },
+                "region" : {
+                  "startLine" : 72
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "B7ED276F-524D-444B-8930-7D77535BF0D0",
+      "message" : {
+        "text" : "工作階段逾時時間過長會讓攻擊者獲得較多的時間，就可能危及使用者帳戶。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/38/?engineType=SCA&issue=41143975A7A3AAF34256151EF874183E&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "41143975A7A3AAF34256151EF874183E"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "WEB-INF/web.xml"
+          },
+          "region" : {
+            "startLine" : 2,
+            "endLine" : 2,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "web.xml:2"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "WEB-INF/web.xml"
+                },
+                "region" : {
+                  "startLine" : 2
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "web.xml:2"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "WEB-INF/web.xml"
+                },
+                "region" : {
+                  "startLine" : 2
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    }, {
+      "ruleId" : "749BCC9F-FE61-4DC0-9EF2-5EF1872C7717",
+      "message" : {
+        "text" : "Web 應用程式必須定義預設的錯誤頁面，以避免攻擊者從應用程式容器的內建錯誤回應中挖掘資訊。\n\n\n [More information](http://192.168.11.128:8080/ssc/html/ssc/version/5/fix/53/?engineType=SCA&issue=DBDD953F9219C36A08DD3122925D9521&filterSet=a243b195-0a59-3f8b-1403-d55b7a7d78e6)"
+      },
+      "level" : "note",
+      "properties" : {
+        "security-severity" : "3.9",
+        "fortify-severity" : "Low"
+      },
+      "partialFingerprints" : {
+        "issueInstanceId" : "DBDD953F9219C36A08DD3122925D9521"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "WEB-INF/web.xml"
+          },
+          "region" : {
+            "startLine" : 2,
+            "endLine" : 2,
+            "startColumn" : 1,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "web.xml:2 - /web-app"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "WEB-INF/web.xml"
+                },
+                "region" : {
+                  "startLine" : 2
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "web.xml:2 - /web-app"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "WEB-INF/web.xml"
+                },
+                "region" : {
+                  "startLine" : 2
+                }
+              }
+            }
+          } ]
+        } ]
+      } ]
+    } ]
+  } ]
+}
